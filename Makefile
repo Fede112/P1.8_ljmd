@@ -28,6 +28,19 @@ mdsys_util.o: include/mdsys_util.h
 clean:
 	rm -rf $(OBJS) *~ $(EXE) *.png 
 
+
+check: ./ljmd.x
+	./ljmd.x <./examples/argon_108.inp
+	head -10 argon_108.dat | awk '{printf("%d %.6f %.6f %.6f\n",$$1,$$2,$$3,$$4);}'> a.dat
+	head -10 ./reference/argon_108.dat | awk '{printf("%d %.6f %.6f %.6f\n",$$1,$$2,$$3,$$4);}'> b.dat
+	cmp a.dat b.dat || exit 1
+	./ljmd.x < ./examples/argon_2916.inp
+	head -10 argon_2916.dat | awk '{printf("%d %.6f %.6f %.6f\n",$$1,$$2,$$3,$$4);}'> a.dat
+	head -10 ./reference/argon_2916.dat | awk '{printf("%d %.6f %.6f %.6f\n",$$1,$$2,$$3,$$4);}'> b.dat
+	cmp a.dat b.dat || exit 1
+	rm -f a.dat b.dat
+
+
 .PHONY: default debug test benchmark clean
 
 # default: serial
