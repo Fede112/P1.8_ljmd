@@ -1,6 +1,4 @@
 *.x
-*.inp
-*.rest
 *~
 *.o
 *.dat
