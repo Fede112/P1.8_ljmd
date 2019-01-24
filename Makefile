@@ -30,15 +30,11 @@ clean:
 
 
 check: ./ljmd.x
-	./ljmd.x <./examples/argon_108.inp
-	head -10 argon_108.dat | awk '{printf("%d %.6f %.6f %.6f\n",$$1,$$2,$$3,$$4);}'> a.dat
-	head -10 ./reference/argon_108.dat | awk '{printf("%d %.6f %.6f %.6f\n",$$1,$$2,$$3,$$4);}'> b.dat
-	cmp a.dat b.dat || exit 1
-	# ./ljmd.x < ./examples/argon_2916.inp
-	# head -10 argon_2916.dat | awk '{printf("%d %.6f %.6f %.6f\n",$$1,$$2,$$3,$$4);}'> a.dat
-	# head -10 ./reference/argon_2916.dat | awk '{printf("%d %.6f %.6f %.6f\n",$$1,$$2,$$3,$$4);}'> b.dat
-	# cmp a.dat b.dat || exit 1
-	# rm -f a.dat b.dat
+	./ljmd.x < ./check/argon_108.inp
+	head -10 ./check/argon_108.dat | awk '{printf("%d %.6f %.6f %.6f\n",$$1,$$2,$$3,$$4);}'> ./check/a.dat
+	head -10 ./reference/argon_108.dat | awk '{printf("%d %.6f %.6f %.6f\n",$$1,$$2,$$3,$$4);}'> ./check/b.dat
+	cmp ./check/a.dat ./check/b.dat || exit 1
+	rm -f ./check/a.dat ./check/b.dat ./check/argon_108.dat ./check/argon_108.xyz
 
 
 .PHONY: default debug test benchmark clean
