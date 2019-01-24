@@ -1,18 +1,56 @@
 # -*- Makefile -*-
 SHELL=/bin/sh
-############################################
-# derived makefile variables
-OBJ_SERIAL=$(SRC:src/%.f90=Obj-serial/%.o)
-############################################
 
-default: serial
+CC=gcc
+CFLAGS= -I./include -Wall -Wextra -O3
+LDFLAGS=
+DEBUG= -g -ggdb
+ 
+EXE=ljmd.x
+OBJS=src/mdsys_force.o src/ljmd.o src/mdsys_input.o src/mdsys_output.o src/mdsys_bc.o src/mdsys_util.o
 
-serial:
-	$(MAKE) $(MFLAGS) -C Obj-$@
+
+default: $(EXE)
+
+$(EXE): $(OBJS)
+	$(CXX) $^ -o $@  $(LDFLAGS)
+
+%.o: %.c
+	$(CC) -c $< -o $@  $(CFLAGS) 
+
+ljmd.o: include/mdsys_struct.h include/mdsys_input.h include/mdsys_bc.h  include/mdsys_force.h
+mdsys_input.o: include/mdsys_input.h  
+mdsys_pbc.o: include/mdsys_pbc.h	
+mdsys_force.o: include/mdsys_force.h include/mdsys_pbc.h include/mdsys_struct
+mdsys_output.o: include/mdsys_output.h
+mdsys_util.o: include/mdsys_util.h
 
 clean:
-	$(MAKE) $(MFLAGS) -C Obj-serial clean
-	$(MAKE) $(MFLAGS) -C examples clean
+	rm -rf $(OBJS) *~ $(EXE) *.png 
 
-check: serial
-	$(MAKE) $(MFLAGS) -C examples check
+.PHONY: default debug test benchmark clean
+
+# default: serial
+
+# serial:
+# 	$(MAKE) $(MFLAGS) -C Obj-$@
+
+# clean:
+# 	$(MAKE) $(MFLAGS) -C Obj-serial clean
+# 	$(MAKE) $(MFLAGS) -C examples clean
+
+# check: serial
+# 	$(MAKE) $(MFLAGS) -C examples check
+
+
+# src/binarytree.o: include/binarytree.h include/iterator.h
+
+# debug: CFLAGS += $(DEBUG) -DTEST
+# debug: default
+# debug: 
+# 	valgrind ./${EXE} 
+
+
+# test: CXXFLAGS += -DTEST
+# test: default
+

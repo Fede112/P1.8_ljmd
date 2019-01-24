@@ -11,123 +11,119 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "mdsys_struct.h"
+#include "mdsys_input.h"
+#include "mdsys_output.h"
+#include "mdsys_bc.h"
+#include "mdsys_force.h"
+#include "mdsys_util.h"
+
 /* generic file- or pathname buffer length */
 #define BLEN 200
 
 /* a few physical constants */
-const double kboltz=0.0019872067;     /* boltzman constant in kcal/mol/K */
-const double mvsq2e=2390.05736153349; /* m*v^2 in kcal/mol */
+// const double kboltz=0.0019872067;     /* boltzman constant in kcal/mol/K */
+// const double mvsq2e=2390.05736153349; /* m*v^2 in kcal/mol */
 
-/* structure to hold the complete information 
- * about the MD system */
-struct _mdsys {
-    int natoms,nfi,nsteps;
-    double dt, mass, epsilon, sigma, box, rcut;
-    double ekin, epot, temp;
-    double *rx, *ry, *rz;
-    double *vx, *vy, *vz;
-    double *fx, *fy, *fz;
-};
-typedef struct _mdsys mdsys_t;
 
 /* helper function: read a line and then return
    the first string with whitespace stripped off */
-static int get_a_line(FILE *fp, char *buf)
-{
-    char tmp[BLEN], *ptr;
+// static int get_a_line(FILE *fp, char *buf)
+// {
+//     char tmp[BLEN], *ptr;
 
-    /* read a line and cut of comments and blanks */
-    if (fgets(tmp,BLEN,fp)) {
-        int i;
+//     /* read a line and cut of comments and blanks */
+//     if (fgets(tmp,BLEN,fp)) {
+//         int i;
 
-        ptr=strchr(tmp,'#');
-        if (ptr) *ptr= '\0';
-        i=strlen(tmp); --i;
-        while(isspace(tmp[i])) {
-            tmp[i]='\0';
-            --i;
-        }
-        ptr=tmp;
-        while(isspace(*ptr)) {++ptr;}
-        i=strlen(ptr);
-        strcpy(buf,tmp);
-        return 0;
-    } else {
-        perror("problem reading input");
-        return -1;
-    }
-    return 0;
-}
+//         ptr=strchr(tmp,'#');
+//         if (ptr) *ptr= '\0';
+//         i=strlen(tmp); --i;
+//         while(isspace(tmp[i])) {
+//             tmp[i]='\0';
+//             --i;
+//         }
+//         ptr=tmp;
+//         while(isspace(*ptr)) {++ptr;}
+//         i=strlen(ptr);
+//         strcpy(buf,tmp);
+//         return 0;
+//     } else {
+//         perror("problem reading input");
+//         return -1;
+//     }
+//     return 0;
+// }
  
-/* helper function: zero out an array */
-static void azzero(double *d, const int n)
-{
-    int i;
-    for (i=0; i<n; ++i) {
-        d[i]=0.0;
-    }
-}
+// /* helper function: zero out an array */
+// static void azzero(double *d, const int n)
+// {
+//     int i;
+//     for (i=0; i<n; ++i) {
+//         d[i]=0.0;
+//     }
+// }
 
-/* helper function: apply minimum image convention */
-static double pbc(double x, const double boxby2)
-{
-    while (x >  boxby2) x -= 2.0*boxby2;
-    while (x < -boxby2) x += 2.0*boxby2;
-    return x;
-}
+// /* helper function: apply minimum image convention */
+// static double pbc(double x, const double boxby2)
+// {
+//     while (x >  boxby2) x -= 2.0*boxby2;
+//     while (x < -boxby2) x += 2.0*boxby2;
+//     return x;
+// }
 
-/* compute kinetic energy */
-static void ekin(mdsys_t *sys)
-{   
-    int i;
+// /* compute kinetic energy */
+// static void ekin(mdsys_t *sys)
+// {   
+//     int i;
 
-    sys->ekin=0.0;
-    for (i=0; i<sys->natoms; ++i) {
-        sys->ekin += 0.5*mvsq2e*sys->mass*(sys->vx[i]*sys->vx[i] + sys->vy[i]*sys->vy[i] + sys->vz[i]*sys->vz[i]);
-    }
-    sys->temp = 2.0*sys->ekin/(3.0*sys->natoms-3.0)/kboltz;
-}
+//     sys->ekin=0.0;
+//     for (i=0; i<sys->natoms; ++i) {
+//         sys->ekin += 0.5*mvsq2e*sys->mass*(sys->vx[i]*sys->vx[i] + sys->vy[i]*sys->vy[i] + sys->vz[i]*sys->vz[i]);
+//     }
+//     sys->temp = 2.0*sys->ekin/(3.0*sys->natoms-3.0)/kboltz;
+// }
 
-/* compute forces */
-static void force(mdsys_t *sys) 
-{
-    double r,ffac;
-    double rx,ry,rz;
-    int i,j;
+// /* compute forces */
+// static void force(mdsys_t *sys) 
+// {
+//     double r,ffac;
+//     double rx,ry,rz;
+//     int i,j;
 
-    /* zero energy and forces */
-    sys->epot=0.0;
-    azzero(sys->fx,sys->natoms);
-    azzero(sys->fy,sys->natoms);
-    azzero(sys->fz,sys->natoms);
+//     /* zero energy and forces */
+//     sys->epot=0.0;
+//     azzero(sys->fx,sys->natoms);
+//     azzero(sys->fy,sys->natoms);
+//     azzero(sys->fz,sys->natoms);
 
-    for(i=0; i < (sys->natoms); ++i) {
-        for(j=0; j < (sys->natoms); ++j) {
+//     for(i=0; i < (sys->natoms); ++i) {
+//         for(j=0; j < (sys->natoms); ++j) {
 
-            /* particles have no interactions with themselves */
-            if (i==j) continue;
+//             /* particles have no interactions with themselves */
+//             if (i==j) continue;
             
-            /* get distance between particle i and j */
-            rx=pbc(sys->rx[i] - sys->rx[j], 0.5*sys->box);
-            ry=pbc(sys->ry[i] - sys->ry[j], 0.5*sys->box);
-            rz=pbc(sys->rz[i] - sys->rz[j], 0.5*sys->box);
-            r = sqrt(rx*rx + ry*ry + rz*rz);
+//             /* get distance between particle i and j */
+//             rx=pbc(sys->rx[i] - sys->rx[j], 0.5*sys->box);
+//             ry=pbc(sys->ry[i] - sys->ry[j], 0.5*sys->box);
+//             rz=pbc(sys->rz[i] - sys->rz[j], 0.5*sys->box);
+//             r = sqrt(rx*rx + ry*ry + rz*rz);
       
-            /* compute force and energy if within cutoff */
-            if (r < sys->rcut) {
-                ffac = -4.0*sys->epsilon*(-12.0*pow(sys->sigma/r,12.0)/r
-                                         +6*pow(sys->sigma/r,6.0)/r);
+//             /* compute force and energy if within cutoff */
+//             if (r < sys->rcut) {
+//                 ffac = -4.0*sys->epsilon*(-12.0*pow(sys->sigma/r,12.0)/r
+//                                          +6*pow(sys->sigma/r,6.0)/r);
                 
-                sys->epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r,12.0)
-                                               -pow(sys->sigma/r,6.0));
+//                 sys->epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r,12.0)
+//                                                -pow(sys->sigma/r,6.0));
 
-                sys->fx[i] += rx/r*ffac;
-                sys->fy[i] += ry/r*ffac;
-                sys->fz[i] += rz/r*ffac;
-            }
-        }
-    }
-}
+//                 sys->fx[i] += rx/r*ffac;
+//                 sys->fy[i] += ry/r*ffac;
+//                 sys->fz[i] += rz/r*ffac;
+//             }
+//         }
+//     }
+// }
 
 /* velocity verlet */
 static void velverlet(mdsys_t *sys)
@@ -155,18 +151,18 @@ static void velverlet(mdsys_t *sys)
     }
 }
 
-/* append data to output. */
-static void output(mdsys_t *sys, FILE *erg, FILE *traj)
-{
-    int i;
+// /* append data to output. */
+// static void output(mdsys_t *sys, FILE *erg, FILE *traj)
+// {
+//     int i;
     
-    printf("% 8d % 20.8f % 20.8f % 20.8f % 20.8f\n", sys->nfi, sys->temp, sys->ekin, sys->epot, sys->ekin+sys->epot);
-    fprintf(erg,"% 8d % 20.8f % 20.8f % 20.8f % 20.8f\n", sys->nfi, sys->temp, sys->ekin, sys->epot, sys->ekin+sys->epot);
-    fprintf(traj,"%d\n nfi=%d etot=%20.8f\n", sys->natoms, sys->nfi, sys->ekin+sys->epot);
-    for (i=0; i<sys->natoms; ++i) {
-        fprintf(traj, "Ar  %20.8f %20.8f %20.8f\n", sys->rx[i], sys->ry[i], sys->rz[i]);
-    }
-}
+//     printf("% 8d % 20.8f % 20.8f % 20.8f % 20.8f\n", sys->nfi, sys->temp, sys->ekin, sys->epot, sys->ekin+sys->epot);
+//     fprintf(erg,"% 8d % 20.8f % 20.8f % 20.8f % 20.8f\n", sys->nfi, sys->temp, sys->ekin, sys->epot, sys->ekin+sys->epot);
+//     fprintf(traj,"%d\n nfi=%d etot=%20.8f\n", sys->natoms, sys->nfi, sys->ekin+sys->epot);
+//     for (i=0; i<sys->natoms; ++i) {
+//         fprintf(traj, "Ar  %20.8f %20.8f %20.8f\n", sys->rx[i], sys->ry[i], sys->rz[i]);
+//     }
+// }
 
 
 /* main */

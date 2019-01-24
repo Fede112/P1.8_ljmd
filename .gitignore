@@ -3,3 +3,5 @@
 *.rest
 *~
 *.o
+*.dat
+*.xyz
