@@ -3,17 +3,17 @@ SHELL=/bin/sh
 
 CC=gcc
 CFLAGS= -I./include -Wall -Wextra -O3
-LDFLAGS=
+LDFLAGS= -lm
 DEBUG= -g -ggdb
  
 EXE=ljmd.x
-OBJS=src/mdsys_force.o src/ljmd.o src/mdsys_input.o src/mdsys_output.o src/mdsys_bc.o src/mdsys_util.o
+OBJS=src/mdsys_force.o src/ljmd.o src/mdsys_input.o src/mdsys_output.o src/mdsys_bc.o src/mdsys_util.o src/mdsys_velverlet.o
 
 
 default: $(EXE)
 
 $(EXE): $(OBJS)
-	$(CXX) $^ -o $@  $(LDFLAGS)
+	$(CC) $^ -o $@  $(LDFLAGS)
 
 %.o: %.c
 	$(CC) -c $< -o $@  $(CFLAGS) 
@@ -21,9 +21,10 @@ $(EXE): $(OBJS)
 ljmd.o: include/mdsys_struct.h include/mdsys_input.h include/mdsys_bc.h  include/mdsys_force.h
 mdsys_input.o: include/mdsys_input.h  
 mdsys_pbc.o: include/mdsys_pbc.h	
-mdsys_force.o: include/mdsys_force.h include/mdsys_pbc.h include/mdsys_struct
+mdsys_force.o: include/mdsys_force.h include/mdsys_pbc.h include/mdsys_struct.h
 mdsys_output.o: include/mdsys_output.h
 mdsys_util.o: include/mdsys_util.h
+mdsys_velverlet.o: include/mdsys_velverlet.h include/mdsys_struct.h
 
 clean:
 	rm -rf $(OBJS) *~ $(EXE) *.png 
