@@ -41,12 +41,16 @@ check: ./ljmd.x
 
 
 # Make test
-test: test_force
+test: test_force test_velverlet
 	./test/test_force.x
+	./test/test_velverlet.x
 
 test_force: 
 	$(CC) ./test/test_force.c ./src/mdsys_force.c ./src/mdsys_bc.c ./src/mdsys_util.c -o ./test/test_force.x -I ./include -lm
 
+
+test_velverlet:
+	$(CC) ./test/test_velverlet.c ./src/mdsys_velverlet.c -o ./test/test_velverlet.x -I ./include -lm
 
 .PHONY: default debug test benchmark clean
 
