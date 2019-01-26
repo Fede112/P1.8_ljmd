@@ -26,7 +26,7 @@ mdsys_output.o: include/mdsys_output.h
 mdsys_util.o: include/mdsys_util.h
 
 clean:
-	rm -rf $(OBJS) *~ $(EXE) *.png 
+	rm -rf $(OBJS) *~ $(EXE) *.png ./test/*.x
 
 
 check: ./ljmd.x
@@ -35,6 +35,16 @@ check: ./ljmd.x
 	head -10 ./reference/argon_108.dat | awk '{printf("%d %.6f %.6f %.6f\n",$$1,$$2,$$3,$$4);}'> ./check/b.dat
 	cmp ./check/a.dat ./check/b.dat || exit 1
 	rm -f ./check/a.dat ./check/b.dat ./check/argon_108.dat ./check/argon_108.xyz
+
+
+
+
+# Make test
+test: test_force
+	./test/test_force.x
+
+test_force: 
+	$(CC) ./test/test_force.c ./src/mdsys_force.c ./src/mdsys_bc.c ./src/mdsys_util.c -o ./test/test_force.x -I ./include -lm
 
 
 .PHONY: default debug test benchmark clean
