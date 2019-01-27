@@ -20,8 +20,8 @@ $(EXE): $(OBJS)
 
 ljmd.o: include/mdsys_struct.h include/mdsys_input.h include/mdsys_bc.h  include/mdsys_force.h
 mdsys_input.o: include/mdsys_input.h  
-mdsys_pbc.o: include/mdsys_pbc.h	
-mdsys_force.o: include/mdsys_force.h include/mdsys_pbc.h include/mdsys_struct.h
+mdsys_bc.o: include/mdsys_bc.h	
+mdsys_force.o: include/mdsys_force.h include/mdsys_bc.h include/mdsys_struct.h
 mdsys_output.o: include/mdsys_output.h
 mdsys_util.o: include/mdsys_util.h
 mdsys_velverlet.o: include/mdsys_velverlet.h include/mdsys_struct.h
@@ -37,10 +37,6 @@ check: ./ljmd.x
 	cmp ./check/a.dat ./check/b.dat || exit 1
 	rm -f ./check/a.dat ./check/b.dat ./check/argon_108.dat ./check/argon_108.xyz
 
-
-
-
-# Make test
 test: test_force test_velverlet test_ekin
 	./test/test_force.x
 	./test/test_velverlet.x
