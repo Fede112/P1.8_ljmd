@@ -19,7 +19,9 @@
 #include "mdsys_util.h"
 #include "mdsys_velverlet.h"
 
-#include "mpi.h"
+// #include "mpi.h"
+
+#include "mdsys_mpi.h"
 
 /* generic file- or pathname buffer length */
 #define BLEN 200
@@ -141,10 +143,13 @@ int main(int argc, char **argv)
         ekin(&sys);
     }
     /**************************************************/
-    MPI_Finalized(&(sys.finalized));
-    if (!(sys.finalized))
-        MPI_Finalize();
+    
 
+    // MPI_Finalized(&(sys.finalized));
+    // if (!(sys.finalized))
+    //     MPI_Finalize();
+
+    mdsys_mpi_finalize(&sys);
     /* clean up: close files, free memory */
     printf("Simulation Done.\n");
     fclose(erg);
