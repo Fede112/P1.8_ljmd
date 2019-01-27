@@ -10,6 +10,12 @@ struct _mdsys {
     double *rx, *ry, *rz;
     double *vx, *vy, *vz;
     double *fx, *fy, *fz;
+    // MPI variables
+    double *b_fx, *b_fy, *b_fz; // buffer needed to calculate force
+    int initialized;
+    int finalized;
+    int rank; // world_rank
+    int nproc; // world_size
 };
 typedef struct _mdsys mdsys_t;
 

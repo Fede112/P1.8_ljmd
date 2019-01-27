@@ -19,6 +19,8 @@
 #include "mdsys_util.h"
 #include "mdsys_velverlet.h"
 
+#include "mpi.h"
+
 /* generic file- or pathname buffer length */
 #define BLEN 200
 
@@ -31,31 +33,54 @@ int main(int argc, char **argv)
 {
     int nprint, i;
     char restfile[BLEN], trajfile[BLEN], ergfile[BLEN], line[BLEN];
-    FILE *fp,*traj,*erg;
+    FILE *fin, *fp,*traj,*erg;
     mdsys_t sys;
 
+    fin=fopen("./check/argon_108.inp","r");
+
+
+
     /* read input file */
-    if(get_a_line(stdin,line)) return 1;
+    if(get_a_line(fin,line)) return 1;
     sys.natoms=atoi(line);
-    if(get_a_line(stdin,line)) return 1;
+    if(get_a_line(fin,line)) return 1;
     sys.mass=atof(line);
-    if(get_a_line(stdin,line)) return 1;
+    if(get_a_line(fin,line)) return 1;
     sys.epsilon=atof(line);
-    if(get_a_line(stdin,line)) return 1;
+    if(get_a_line(fin,line)) return 1;
     sys.sigma=atof(line);
-    if(get_a_line(stdin,line)) return 1;
+    if(get_a_line(fin,line)) return 1;
     sys.rcut=atof(line);
-    if(get_a_line(stdin,line)) return 1;
+    if(get_a_line(fin,line)) return 1;
     sys.box=atof(line);
-    if(get_a_line(stdin,restfile)) return 1;
-    if(get_a_line(stdin,trajfile)) return 1;
-    if(get_a_line(stdin,ergfile)) return 1;
-    if(get_a_line(stdin,line)) return 1;
+    if(get_a_line(fin,restfile)) return 1;
+    if(get_a_line(fin,trajfile)) return 1;
+    if(get_a_line(fin,ergfile)) return 1;
+    if(get_a_line(fin,line)) return 1;
     sys.nsteps=atoi(line);
-    if(get_a_line(stdin,line)) return 1;
+    if(get_a_line(fin,line)) return 1;
     sys.dt=atof(line);
-    if(get_a_line(stdin,line)) return 1;
+    if(get_a_line(fin,line)) return 1;
     nprint=atoi(line);
+
+    fclose(fin);
+
+
+
+    // sys.natoms = 108;
+    // sys.mass = 39.948;
+    // sys.epsilon = 0.2379;
+    // sys.sigma = 3.405;
+    // sys.rcut = 8.5;
+    // sys.box = 17.1580;
+    // char restfile[BLEN] = "./check/argon_108.rest";
+    // char trajfile[BLEN] = "./check/argon_108.xyz";
+    // char ergfile[BLEN] = "./check/argon_108.dat";
+    // sys.nsteps = 10000;
+    // sys.dt = 5.0;
+    // nprint = 100;
+
+
 
     /* allocate memory */
     sys.rx=(double *)malloc(sys.natoms*sizeof(double));
@@ -67,6 +92,9 @@ int main(int argc, char **argv)
     sys.fx=(double *)malloc(sys.natoms*sizeof(double));
     sys.fy=(double *)malloc(sys.natoms*sizeof(double));
     sys.fz=(double *)malloc(sys.natoms*sizeof(double));
+    sys.b_fx=(double *)malloc(sys.natoms*sizeof(double));
+    sys.b_fy=(double *)malloc(sys.natoms*sizeof(double));
+    sys.b_fz=(double *)malloc(sys.natoms*sizeof(double));
 
     /* read restart */
     fp=fopen(restfile,"r");
@@ -113,6 +141,9 @@ int main(int argc, char **argv)
         ekin(&sys);
     }
     /**************************************************/
+    MPI_Finalized(&(sys.finalized));
+    if (!(sys.finalized))
+        MPI_Finalize();
 
     /* clean up: close files, free memory */
     printf("Simulation Done.\n");

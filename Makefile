@@ -1,7 +1,7 @@
 # -*- Makefile -*-
 SHELL=/bin/sh
 
-CC=gcc
+CC=mpicc
 CFLAGS= -I./include -Wall -Wextra -O3
 LDFLAGS= -lm
 DEBUG= -g -ggdb
