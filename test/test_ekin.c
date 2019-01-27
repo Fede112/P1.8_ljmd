@@ -40,7 +40,7 @@ int main()
     ekin(&sys);	
 	
 	kin=0.0;    
-	printf("Testing ekin() ... \n", kin);    
+	printf("Testing ekin() ... \n");    
 	for (int i=0; i<natoms; i++){
 		kin+=0.5*mass*mvsq2e*(vx[i]*vx[i]+vy[i]*vy[i]+vz[i]*vz[i]);
     	}
