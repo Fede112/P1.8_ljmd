@@ -47,12 +47,12 @@ int main(int argc, char const *argv[])
 	force(&sys);
 
 	// printf("Da esto: %lf\n", sys.fx[0] );
-	if(	!(fabs(sys.fx[0] - -1914.6104249) < 1914.6104249*eps_tole)  ){exit(1);}
-	if(	!(fabs(sys.fy[0] - -1914.6104249) < 1914.6104249*eps_tole)  ){exit(1);}
-	if(	!(fabs(sys.fz[0] - -1914.6104249) < 1914.6104249*eps_tole)  ){exit(1);}
-	if(	!(fabs(sys.fx[1] - 1914.6104249) < 1914.6104249*eps_tole)  ){exit(1);}
-	if(	!(fabs(sys.fy[1] - 1914.6104249) < 1914.6104249*eps_tole)  ){exit(1);}
-	if(	!(fabs(sys.fz[1] - 1914.6104249) < 1914.6104249*eps_tole)  ){exit(1);}
+	if(	(fabs(sys.fx[0] - -1914.6104249) > 1914.6104249*eps_tole)  ){exit(1);}
+	if(	(fabs(sys.fy[0] - -1914.6104249) > 1914.6104249*eps_tole)  ){exit(1);}
+	if(	(fabs(sys.fz[0] - -1914.6104249) > 1914.6104249*eps_tole)  ){exit(1);}
+	if(	(fabs(sys.fx[1] - 1914.6104249) > 1914.6104249*eps_tole)  ){exit(1);}
+	if(	(fabs(sys.fy[1] - 1914.6104249) > 1914.6104249*eps_tole)  ){exit(1);}
+	if(	(fabs(sys.fz[1] - 1914.6104249) > 1914.6104249*eps_tole)  ){exit(1);}
 
 	/////////////////////////////////////////////////////////////////////////////////
 	// Particle_Distance12 = 5 > sys.rcut
@@ -65,12 +65,12 @@ int main(int argc, char const *argv[])
 
 	force(&sys);
 	
-	if(	!(fabs(sys.fx[0] - 0) < eps_tole)  ){exit(1);}
-	if(	!(fabs(sys.fy[0] - 0) < eps_tole)  ){exit(1);}
-	if(	!(fabs(sys.fz[0] - 0) < eps_tole)  ){exit(1);}
-	if(	!(fabs(sys.fx[1] - 0) < eps_tole)  ){exit(1);}
-	if(	!(fabs(sys.fy[1] - 0) < eps_tole)  ){exit(1);}
-	if(	!(fabs(sys.fz[1] - 0) < eps_tole)  ){exit(1);}
+	if(	(fabs(sys.fx[0] - 0) > eps_tole)  ){exit(1);}
+	if(	(fabs(sys.fy[0] - 0) > eps_tole)  ){exit(1);}
+	if(	(fabs(sys.fz[0] - 0) > eps_tole)  ){exit(1);}
+	if(	(fabs(sys.fx[1] - 0) > eps_tole)  ){exit(1);}
+	if(	(fabs(sys.fy[1] - 0) > eps_tole)  ){exit(1);}
+	if(	(fabs(sys.fz[1] - 0) > eps_tole)  ){exit(1);}
 
 	/////////////////////////////////////////////////////////////////////////////////
 	// Particle_Distance12 = 5 > boxdist 
@@ -88,12 +88,12 @@ int main(int argc, char const *argv[])
 
 	force(&sys);
 
-	if(	!(fabs(sys.fx[0] - 61.6889064) < 61.6889064*eps_tole)  ){exit(1);}
-	if(	!(fabs(sys.fy[0] - -61.6889064) < 61.6889064*eps_tole)  ){exit(1);}
-	if(	!(fabs(sys.fz[0] - 0) < 61.6889064*eps_tole)  ){exit(1);}
-	if(	!(fabs(sys.fx[1] - -61.6889064) < 61.6889064*eps_tole)  ){exit(1);}
-	if(	!(fabs(sys.fy[1] - 61.6889064) < 61.6889064*eps_tole)  ){exit(1);}
-	if(	!(fabs(sys.fz[1] - 0) < 61.6889064*eps_tole)  ){exit(1);}
+	if(	(fabs(sys.fx[0] - 61.6889064) > 61.6889064*eps_tole)  ){exit(1);}
+	if(	(fabs(sys.fy[0] - -61.6889064) > 61.6889064*eps_tole)  ){exit(1);}
+	if(	(fabs(sys.fz[0] - 0) > 61.6889064*eps_tole)  ){exit(1);}
+	if(	(fabs(sys.fx[1] - -61.6889064) > 61.6889064*eps_tole)  ){exit(1);}
+	if(	(fabs(sys.fy[1] - 61.6889064) > 61.6889064*eps_tole)  ){exit(1);}
+	if(	(fabs(sys.fz[1] - 0) > 61.6889064*eps_tole)  ){exit(1);}
 
 	printf("force() test completed.\n");
 
