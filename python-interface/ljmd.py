@@ -40,3 +40,12 @@ class mdsys_t(Structure):
     ('fy', POINTER(c_double)), 
     ('fz', POINTER(c_double)),      
   ]  
+
+
+# to check the structure
+sys = mdsys_t()
+sys.natoms=100
+
+sys.ekin=5.0
+
+print("sys natoms:{}, fy:{}, ekin:{}".format(sys.natoms, sys.fy, sys.ekin))
