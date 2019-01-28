@@ -49,3 +49,14 @@ sys.natoms=100
 sys.ekin=5.0
 
 print("sys natoms:{}, fy:{}, ekin:{}".format(sys.natoms, sys.fy, sys.ekin))
+
+
+# testing structure using a dummy function from the source code
+
+sys.natoms=20 
+ilist = (c_int * sys.natoms)()
+
+test = libC.print_test(ilist, sys.natoms)
+print "print from python: ", sys.natoms
+
+
