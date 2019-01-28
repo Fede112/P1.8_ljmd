@@ -37,14 +37,16 @@ check: ./ljmd.x
 	cmp ./check/a.dat ./check/b.dat || exit 1
 	rm -f ./check/a.dat ./check/b.dat ./check/argon_108.dat ./check/argon_108.xyz
 
-test: test_force test_velverlet test_ekin
+
+# Make test
+test: test_force test_velverlet test_ekin test_input
 	./test/test_force.x
 	./test/test_velverlet.x
 	./test/test_ekin.x
+	./test/test_input.x < ./check/argon_108.inp
 
 test_force: 
 	$(CC) ./test/test_force.c ./src/mdsys_force.c ./src/mdsys_bc.c ./src/mdsys_util.c -o ./test/test_force.x -I ./include -lm
-
 
 test_velverlet:
 	$(CC) ./test/test_velverlet.c ./src/mdsys_velverlet.c -o ./test/test_velverlet.x -I ./include -lm
@@ -52,6 +54,9 @@ test_velverlet:
 test_ekin:
 	$(CC) ./test/test_ekin.c ./src/mdsys_force.c ./src/mdsys_util.c ./src/mdsys_bc.c -o ./test/test_ekin.x -I ./include -lm
 	
+test_input:
+	$(CC) ./test/test_input.c ./src/mdsys_input.c ./src/mdsys_util.c -o ./test/test_input.x -I ./include -lm
+
 
 .PHONY: default debug test benchmark clean
 

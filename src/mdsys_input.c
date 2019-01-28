@@ -88,7 +88,7 @@ int read_data (FILE *fp, char *restfile, mdsys_t *sys)
         perror("cannot read restart file");
         return 3;
         }
-	}
+}
 	
 	
 
