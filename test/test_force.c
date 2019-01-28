@@ -2,10 +2,7 @@
 #include <stdlib.h>
 #include "math.h"
 #include "mdsys_force.h"
-#include "mdsys_bc.h"
 #include "mdsys_struct.h"
-#include "mdsys_util.h"
-
 
 // static const double kboltz=0.0019872067;     /* boltzman constant in kcal/mol/K */
 // static const double mvsq2e=2390.05736153349; /* m*v^2 in kcal/mol */

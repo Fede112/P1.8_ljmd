@@ -2,12 +2,12 @@
 SHELL=/bin/sh
 
 CC=gcc
-CFLAGS= -I./include -Wall -Wextra -O3
+CFLAGS= -I./include -Wall -Wextra -O3 
 LDFLAGS= -lm
 DEBUG= -g -ggdb
  
 EXE=ljmd.x
-OBJS=src/mdsys_force.o src/ljmd.o src/mdsys_input.o src/mdsys_output.o src/mdsys_bc.o src/mdsys_util.o src/mdsys_velverlet.o
+OBJS=src/mdsys_force.o src/ljmd.o src/mdsys_input.o src/mdsys_output.o src/mdsys_util.o src/mdsys_velverlet.o #src/mdsys_bc.o
 
 
 default: $(EXE)
@@ -18,13 +18,12 @@ $(EXE): $(OBJS)
 %.o: %.c
 	$(CC) -c $< -o $@  $(CFLAGS) 
 
-ljmd.o: include/mdsys_struct.h include/mdsys_input.h include/mdsys_bc.h  include/mdsys_force.h
-mdsys_input.o: include/mdsys_input.h  
-mdsys_bc.o: include/mdsys_bc.h	
-mdsys_force.o: include/mdsys_force.h include/mdsys_bc.h include/mdsys_struct.h
-mdsys_output.o: include/mdsys_output.h
-mdsys_util.o: include/mdsys_util.h
-mdsys_velverlet.o: include/mdsys_velverlet.h include/mdsys_struct.h
+src/ljmd.o: include/mdsys_struct.h include/mdsys_input.h include/mdsys_force.h
+src/mdsys_input.o: include/mdsys_input.h  
+src/mdsys_force.o: include/mdsys_force.h include/mdsys_bc.h include/mdsys_struct.h
+src/mdsys_output.o: include/mdsys_output.h
+src/mdsys_util.o: include/mdsys_util.h
+src/mdsys_velverlet.o: include/mdsys_velverlet.h include/mdsys_struct.h
 
 clean:
 	rm -rf $(OBJS) *~ $(EXE) *.png ./test/*.x
@@ -46,17 +45,19 @@ test: test_force test_velverlet test_ekin test_input
 	./test/test_input.x < ./test/check/argon_108.inp
 
 test_force: 
-	$(CC) ./test/test_force.c ./src/mdsys_force.c ./src/mdsys_bc.c ./src/mdsys_util.c -o ./test/test_force.x -I ./include -lm
+	$(CC) ./test/test_force.c ./src/mdsys_force.c ./src/mdsys_util.c -o ./test/test_force.x -I ./include -lm
 
 test_velverlet:
 	$(CC) ./test/test_velverlet.c ./src/mdsys_velverlet.c -o ./test/test_velverlet.x -I ./include -lm
 	
 test_ekin:
-	$(CC) ./test/test_ekin.c ./src/mdsys_force.c ./src/mdsys_util.c ./src/mdsys_bc.c -o ./test/test_ekin.x -I ./include -lm
+	$(CC) ./test/test_ekin.c ./src/mdsys_force.c ./src/mdsys_util.c -o ./test/test_ekin.x -I ./include -lm
 	
 test_input:
 	$(CC) ./test/test_input.c ./src/mdsys_input.c ./src/mdsys_util.c -o ./test/test_input.x -I ./include -lm
 
+time: ./ljmd.x
+	/usr/bin/time -p -o profiling/time_record.dat -a ./ljmd.x < ./test/check/argon_108.inp
 
 .PHONY: default debug test benchmark clean
 
