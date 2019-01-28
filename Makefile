@@ -31,11 +31,11 @@ clean:
 
 
 check: ./ljmd.x
-	./ljmd.x < ./check/argon_108.inp
-	head -10 ./check/argon_108.dat | awk '{printf("%d %.6f %.6f %.6f\n",$$1,$$2,$$3,$$4);}'> ./check/a.dat
-	head -10 ./reference/argon_108.dat | awk '{printf("%d %.6f %.6f %.6f\n",$$1,$$2,$$3,$$4);}'> ./check/b.dat
-	cmp ./check/a.dat ./check/b.dat || exit 1
-	rm -f ./check/a.dat ./check/b.dat ./check/argon_108.dat ./check/argon_108.xyz
+	./ljmd.x < ./test/check/argon_108.inp
+	head -10 ./test/check/argon_108.dat | awk '{printf("%d %.6f %.6f %.6f\n",$$1,$$2,$$3,$$4);}'> ./test/check/a.dat
+	head -10 ./test/reference/argon_108.dat | awk '{printf("%d %.6f %.6f %.6f\n",$$1,$$2,$$3,$$4);}'> ./test/check/b.dat
+	cmp ./test/check/a.dat ./test/check/b.dat || exit 1
+	rm -f ./test/check/a.dat ./test/check/b.dat ./test/check/argon_108.dat ./test/check/argon_108.xyz
 
 
 # Make test
@@ -43,7 +43,7 @@ test: test_force test_velverlet test_ekin test_input
 	./test/test_force.x
 	./test/test_velverlet.x
 	./test/test_ekin.x
-	./test/test_input.x < ./check/argon_108.inp
+	./test/test_input.x < ./test/check/argon_108.inp
 
 test_force: 
 	$(CC) ./test/test_force.c ./src/mdsys_force.c ./src/mdsys_bc.c ./src/mdsys_util.c -o ./test/test_force.x -I ./include -lm

@@ -95,7 +95,7 @@ int main(int argc, char const *argv[])
 	if(	(fabs(sys.fy[1] - 61.6889064) > 61.6889064*eps_tole)  ){exit(1);}
 	if(	(fabs(sys.fz[1] - 0) > 61.6889064*eps_tole)  ){exit(1);}
 
-	printf("force() test completed.\n");
+	printf("force() test: PASSED!\n");
 
 	return 0;
 }
