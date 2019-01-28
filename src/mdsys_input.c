@@ -38,28 +38,31 @@ int get_a_line(FILE *fp, char *buf)
 /*add comment*/
 int input_param( mdsys_t *sys, char *restfile, char *trajfile, char *ergfile, char *line, int *nprint)
 {
+    FILE *fin;
+    fin=fopen("./test/check/argon_108.inp","r");
     /* read input file */
-    if(get_a_line(stdin,line)) return 1;
+    if(get_a_line(fin,line)) return 1;
     sys->natoms=atoi(line);
-    if(get_a_line(stdin,line)) return 1;
+    if(get_a_line(fin,line)) return 1;
     sys->mass=atof(line);
-    if(get_a_line(stdin,line)) return 1;
+    if(get_a_line(fin,line)) return 1;
     sys->epsilon=atof(line);
-    if(get_a_line(stdin,line)) return 1;
+    if(get_a_line(fin,line)) return 1;
     sys->sigma=atof(line);
-    if(get_a_line(stdin,line)) return 1;
+    if(get_a_line(fin,line)) return 1;
     sys->rcut=atof(line);
-    if(get_a_line(stdin,line)) return 1;
+    if(get_a_line(fin,line)) return 1;
     sys->box=atof(line);
-    if(get_a_line(stdin,restfile)) return 1;
-    if(get_a_line(stdin,trajfile)) return 1;
-    if(get_a_line(stdin,ergfile)) return 1;
-    if(get_a_line(stdin,line)) return 1;
+    if(get_a_line(fin,restfile)) return 1;
+    if(get_a_line(fin,trajfile)) return 1;
+    if(get_a_line(fin,ergfile)) return 1;
+    if(get_a_line(fin,line)) return 1;
     sys->nsteps=atoi(line);
-    if(get_a_line(stdin,line)) return 1;
+    if(get_a_line(fin,line)) return 1;
     sys->dt=atof(line);
-    if(get_a_line(stdin,line)) return 1;
+    if(get_a_line(fin,line)) return 1;
     *nprint=atoi(line);
+    fclose(fin);
     
     return 0;
 	

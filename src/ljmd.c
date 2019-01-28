@@ -33,9 +33,9 @@
 /* main */
 int main(int argc, char **argv) 
 {
-    int nprint, i;
+    int nprint;
     char restfile[BLEN], trajfile[BLEN], ergfile[BLEN], line[BLEN];
-    FILE *fin, *fp,*traj,*erg;
+    FILE *fp,*traj,*erg;
     mdsys_t sys;
 
     mdsys_mpi_init(&sys);
@@ -98,10 +98,15 @@ int main(int argc, char **argv)
     
 
     mdsys_mpi_finalize(&sys);
+
     /* clean up: close files, free memory */
     printf("Simulation Done.\n");
-    fclose(erg);
-    fclose(traj);
+    
+    if (!sys.rank)
+    {
+        fclose(erg);
+        fclose(traj);
+    }
 
     free(sys.rx);
     free(sys.ry);
