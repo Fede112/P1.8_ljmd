@@ -1,8 +1,8 @@
 # -*- Makefile -*-
 SHELL=/bin/sh
 
-# CC=mpicc
-CC=gcc
+CC=mpicc
+# CC=gcc
 CFLAGS= -I./include -Wall -Wextra -O3 
 LDFLAGS= -lm
 DEBUG= -g -ggdb
@@ -28,7 +28,7 @@ src/mdsys_force.o: include/mdsys_force.h include/mdsys_bc.h include/mdsys_struct
 src/mdsys_output.o: include/mdsys_output.h
 src/mdsys_util.o: include/mdsys_util.h
 src/mdsys_velverlet.o: include/mdsys_velverlet.h include/mdsys_struct.h
-src/mdsys_mpi.o: include/mdsys_mpi.h mpi.h
+src/mdsys_mpi.o: include/mdsys_mpi.h
 
 clean:
 	rm -rf $(OBJS) *~ $(EXE) *.png ./test/*.x
