@@ -10,7 +10,7 @@
 // #include "mpi.h"
 
 
-double const kboltz=0.0019872067;     /* boltzman constant in kcal/mol/K */
+const double kboltz=0.0019872067;     /* boltzman constant in kcal/mol/K */
 const double mvsq2e=2390.05736153349; /* m*v^2 in kcal/mol */
 
 
@@ -38,7 +38,7 @@ void force(mdsys_t *sys)
     //     MPI_Comm_rank( MPI_COMM_WORLD, &(sys->rank));
     // }
 
-    mdsys_mpi_init(sys);
+    // mdsys_mpi_init(sys);
 
 
     // buffers for mpi

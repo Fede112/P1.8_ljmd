@@ -7,7 +7,8 @@ LDFLAGS= -lm
 DEBUG= -g -ggdb
  
 EXE=ljmd.x
-OBJS=src/mdsys_force.o src/ljmd.o src/mdsys_input.o src/mdsys_output.o src/mdsys_bc.o src/mdsys_util.o src/mdsys_velverlet.o src/mdsys_mpi.o
+OBJS=src/mdsys_force.o src/ljmd.o src/mdsys_input.o src/mdsys_output.o src/mdsys_bc.o src/mdsys_util.o \
+src/mdsys_velverlet.o src/mdsys_mpi.o
 
 
 default: $(EXE)

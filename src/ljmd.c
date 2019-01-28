@@ -38,9 +38,11 @@ int main(int argc, char **argv)
     FILE *fin, *fp,*traj,*erg;
     mdsys_t sys;
 
-	if (input_param(&sys,restfile, trajfile,ergfile,line, &nprint)==1)
+    mdsys_mpi_init(&sys);
+
+    if (input_param(&sys,restfile, trajfile,ergfile,line, &nprint)==1)
 		return 1;
-	
+
     /* allocate memory */
     sys.rx=(double *)malloc(sys.natoms*sizeof(double));
     sys.ry=(double *)malloc(sys.natoms*sizeof(double));
@@ -55,19 +57,25 @@ int main(int argc, char **argv)
     sys.b_fy=(double *)malloc(sys.natoms*sizeof(double));
     sys.b_fz=(double *)malloc(sys.natoms*sizeof(double));
 
-	if (read_data (fp, restfile, &sys)== 3) return 3;
+    if (!sys.rank)
+    {	
+    	if (read_data (fp, restfile, &sys)== 3) return 3;
+    }
 
     /* initialize forces and energies.*/
     sys.nfi=0;
     force(&sys);
     ekin(&sys);
     
-    erg=fopen(ergfile,"w");
-    traj=fopen(trajfile,"w");
+    if (!sys.rank)
+    {
+        erg=fopen(ergfile,"w");
+        traj=fopen(trajfile,"w");
 
-    printf("Starting simulation with %d atoms for %d steps.\n",sys.natoms, sys.nsteps);
-    printf("     NFI            TEMP            EKIN                 EPOT              ETOT\n");
-    output(&sys, erg, traj);
+        printf("Starting simulation with %d atoms for %d steps.\n",sys.natoms, sys.nsteps);
+        printf("     NFI            TEMP            EKIN                 EPOT              ETOT\n");
+        output(&sys, erg, traj);
+    }
 
     /**************************************************/
     /* main MD loop */
@@ -75,7 +83,10 @@ int main(int argc, char **argv)
 
         /* write output, if requested */
         if ((sys.nfi % nprint) == 0)
-            output(&sys, erg, traj);
+            if (!sys.rank)
+            {
+                output(&sys, erg, traj);
+            }
 
         /* propagate system and recompute energies */
         velverlet_1(&sys);
@@ -85,10 +96,6 @@ int main(int argc, char **argv)
     }
     /**************************************************/
     
-
-    // MPI_Finalized(&(sys.finalized));
-    // if (!(sys.finalized))
-    //     MPI_Finalize();
 
     mdsys_mpi_finalize(&sys);
     /* clean up: close files, free memory */
