@@ -14,9 +14,7 @@
 #include "mdsys_struct.h"
 #include "mdsys_input.h"
 #include "mdsys_output.h"
-#include "mdsys_bc.h"
 #include "mdsys_force.h"
-#include "mdsys_util.h"
 #include "mdsys_velverlet.h"
 
 // #include "mpi.h"

@@ -45,15 +45,15 @@ int main(int argc, char **argv)
 	else printf("BOX LENGTH testreading failed!\n");
 
 //	restfile1[200]="./check/argon_108.rest"; 
-	if(!strcmp(restfile,"./check/argon_108.rest")) ok_counter++;
+	if(!strcmp(restfile,"./test/check/argon_108.rest")) ok_counter++;
 	else printf("Restart FILE failed!\n");
 
 //	restfile1[200]="./check/argon_108.rest"; 
-	if(!strcmp(trajfile,"./check/argon_108.xyz")) ok_counter++;
+	if(!strcmp(trajfile,"./test/check/argon_108.xyz")) ok_counter++;
 	else printf("Trajectory FILE failed!\n");
 
 //	restfile1[200]="./check/argon_108.rest"; 
-	if(!strcmp(ergfile,"./check/argon_108.dat")) ok_counter++;
+	if(!strcmp(ergfile,"./test/check/argon_108.dat")) ok_counter++;
 	else printf("Energies FILE failed!\n");
 	
 	if (sys.nsteps==nsteps) ok_counter++;
