@@ -38,52 +38,9 @@ int main(int argc, char **argv)
     FILE *fin, *fp,*traj,*erg;
     mdsys_t sys;
 
-    fin=fopen("./check/argon_108.inp","r");
-
-
-
-    /* read input file */
-    if(get_a_line(fin,line)) return 1;
-    sys.natoms=atoi(line);
-    if(get_a_line(fin,line)) return 1;
-    sys.mass=atof(line);
-    if(get_a_line(fin,line)) return 1;
-    sys.epsilon=atof(line);
-    if(get_a_line(fin,line)) return 1;
-    sys.sigma=atof(line);
-    if(get_a_line(fin,line)) return 1;
-    sys.rcut=atof(line);
-    if(get_a_line(fin,line)) return 1;
-    sys.box=atof(line);
-    if(get_a_line(fin,restfile)) return 1;
-    if(get_a_line(fin,trajfile)) return 1;
-    if(get_a_line(fin,ergfile)) return 1;
-    if(get_a_line(fin,line)) return 1;
-    sys.nsteps=atoi(line);
-    if(get_a_line(fin,line)) return 1;
-    sys.dt=atof(line);
-    if(get_a_line(fin,line)) return 1;
-    nprint=atoi(line);
-
-    fclose(fin);
-
-
-
-    // sys.natoms = 108;
-    // sys.mass = 39.948;
-    // sys.epsilon = 0.2379;
-    // sys.sigma = 3.405;
-    // sys.rcut = 8.5;
-    // sys.box = 17.1580;
-    // char restfile[BLEN] = "./check/argon_108.rest";
-    // char trajfile[BLEN] = "./check/argon_108.xyz";
-    // char ergfile[BLEN] = "./check/argon_108.dat";
-    // sys.nsteps = 10000;
-    // sys.dt = 5.0;
-    // nprint = 100;
-
-
-
+	if (input_param(&sys,restfile, trajfile,ergfile,line, &nprint)==1)
+		return 1;
+	
     /* allocate memory */
     sys.rx=(double *)malloc(sys.natoms*sizeof(double));
     sys.ry=(double *)malloc(sys.natoms*sizeof(double));
@@ -98,23 +55,7 @@ int main(int argc, char **argv)
     sys.b_fy=(double *)malloc(sys.natoms*sizeof(double));
     sys.b_fz=(double *)malloc(sys.natoms*sizeof(double));
 
-    /* read restart */
-    fp=fopen(restfile,"r");
-    if(fp) {
-        for (i=0; i<sys.natoms; ++i) {
-            fscanf(fp,"%lf%lf%lf",sys.rx+i, sys.ry+i, sys.rz+i);
-        }
-        for (i=0; i<sys.natoms; ++i) {
-            fscanf(fp,"%lf%lf%lf",sys.vx+i, sys.vy+i, sys.vz+i);
-        }
-        fclose(fp);
-        azzero(sys.fx, sys.natoms);
-        azzero(sys.fy, sys.natoms);
-        azzero(sys.fz, sys.natoms);
-    } else {
-        perror("cannot read restart file");
-        return 3;
-    }
+	if (read_data (fp, restfile, &sys)== 3) return 3;
 
     /* initialize forces and energies.*/
     sys.nfi=0;
@@ -167,3 +108,4 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
