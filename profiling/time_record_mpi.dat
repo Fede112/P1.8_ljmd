@@ -1,0 +1,28 @@
+#mpi 1st(baseline + only 3rd law + O3)
+real 6.40
+user 12.60
+sys 0.08
+#compiling flags
+real 1.01
+user 1.87
+sys 0.05
+#rm -O3 and flags
+real 7.50
+user 14.85
+sys 0.04
+#less math.h f()s (rm -O3 and flags)
+real 2.14
+user 4.16
+sys 0.05
+#add -O3
+real 0.96
+user 1.78
+sys 0.05
+#add all flags + np=1
+real 1.58
+user 1.52
+sys 0.05
+#all flags + np=2
+real 0.89
+user 1.66
+sys 0.04

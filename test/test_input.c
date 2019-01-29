@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 	int nprint;
 	char restfile[BLEN], trajfile[BLEN], ergfile[BLEN], line[BLEN];
 	
-	input_param(&sys, restfile, trajfile, ergfile, line, &nprint);
+	input_param(&sys,argv[1],restfile, trajfile, ergfile,line, &nprint);
 	
 	natoms=108; nsteps=10000; nprint1=100;
 	mass=39.948; epsilon=0.2379; sigma=3.405; rcut=8.5; box=17.1580; dt=5.0;

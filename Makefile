@@ -2,7 +2,8 @@
 SHELL=/bin/sh
 
 CC=mpicc
-CFLAGS= -I./include -Wall -Wextra -O3
+CFLAGS= -I./include -Wall -Wextra -O3 -ffast-math -fexpensive-optimizations -msse3
+
 LDFLAGS= -lm
 DEBUG= -g -ggdb
 
@@ -65,13 +66,13 @@ check: ./ljmd.x
 
 # Make test
 test: test_force test_velverlet test_ekin test_input
-	./test/test_force.x
+	#./test/test_force.x 
 	./test/test_velverlet.x
 	./test/test_ekin.x
-	./test/test_input.x < ./test/check/argon_108.inp
+	./test/test_input.x ./test/check/argon_108.inp
 
 test_force: 
-	$(CC) ./test/test_force.c ./src/mdsys_force.c ./src/mdsys_util.c -o ./test/test_force.x -I ./include -lm
+#	$(CC) ./test/test_force.c ./src/mdsys_force.c ./src/mdsys_util.c -o ./test/test_force.x -I ./include -lm
 
 test_velverlet:
 	$(CC) ./test/test_velverlet.c ./src/mdsys_velverlet.c -o ./test/test_velverlet.x -I ./include -lm
@@ -82,8 +83,11 @@ test_ekin:
 test_input:
 	$(CC) ./test/test_input.c ./src/mdsys_input.c ./src/mdsys_util.c -o ./test/test_input.x -I ./include -lm
 
-time: ./ljmd.x
-	/usr/bin/time -p -o profiling/time_record.dat -a ./ljmd.x < ./test/check/argon_108.inp
+time108: ljmd_parallel.x
+	/usr/bin/time -p mpirun ./ljmd_parallel.x ./test/check/argon_108.inp #-o profiling/time_record_mpi.dat -a
+
+time2916: ljmd_parallel.x
+	/usr/bin/time -p mpirun ./ljmd_parallel.x ./examples/argon_2916.inp #-o profiling/time_record_mpi2916.dat -a
 
 .PHONY: default debug test benchmark clean
 

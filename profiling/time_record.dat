@@ -1,0 +1,54 @@
+#split-baseline
+real 25.62
+user 25.59
+sys 0.00
+#add inline pbc
+real 25.49
+user 25.46
+sys 0.00
+#add -O3
+real 22.80
+user 22.78
+sys 0.00
+#unrolling (wrong!)
+real 11.72
+user 11.72
+sys 0.00
+#unrolling failed!
+real 22.10
+user 22.09
+sys 0.00
+#unrolling 1 (ok!)
+real 22.46
+user 22.44
+sys 0.00
+#unrolling 2 (ok!)
+real 22.34
+user 22.32
+sys 0.01
+#unrolling 3 (ok!)
+real 22.18
+user 22.16
+sys 0.00
+#-O2
+real 22.26
+user 22.25
+sys 0.00
+#extra OPT-FLAGS
+real 2.94
+user 2.94
+sys 0.00
+#rolled (unrolling did seem very effective at this point)
+real 3.64
+user 3.63
+sys 0.00
+
+#no 3rd law (less math.h functions)
+real 3.04
+user 3.04
+sys 0.00
+#part2 (3rd law + less math.h functions)
+real 1.55
+user 1.54
+sys 0.00
+
