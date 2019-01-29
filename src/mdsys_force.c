@@ -32,17 +32,53 @@ void force(mdsys_t *sys)
     double rx2,ry2,rz2;
     int i,j;
 
+	double c6, c12, rsq, rcsq;
+	c12= 4.0* sys->epsilon* pow(sys->sigma,12.0);
+	c6 = 4.0* sys->epsilon* pow(sys->sigma,6.0);
+	rcsq = sys->rcut * sys->rcut;
+
+	
     /* zero energy and forces */
     sys->epot=0.0;
     azzero(sys->fx,sys->natoms);
     azzero(sys->fy,sys->natoms);
     azzero(sys->fz,sys->natoms);
 
-//    for(i=0; i < (sys->natoms); i++) {
-   for(i=0; i < (sys->natoms); i++) {
-	    for(j=0; j < (sys->natoms); j++) {
+	
+	for(i=0; i < (sys->natoms)-1; i++) {
+	   for(j=i+1; j < (sys->natoms); j++) {
 
-			if (i==j) continue;
+//		if (i==j) continue;
+            /* get distance between particle i and j */
+			rx1=pbc(sys->rx[i] - sys->rx[j], 0.5*sys->box);
+  	        ry1=pbc(sys->ry[i] - sys->ry[j], 0.5*sys->box);
+   	        rz1=pbc(sys->rz[i] - sys->rz[j], 0.5*sys->box);
+   	        rsq = rx1*rx1 + ry1*ry1 + rz1*rz1;
+
+    	        /* compute force and energy if within cutoff */
+			if (rsq < rcsq){
+				
+				double rsqinv = 1.0/rsq;
+				double r6 = rsqinv *rsqinv *rsqinv;
+				
+				ffac1 = (12.0*c12*r6- 6.0*c6)*r6*rsqinv;
+				sys->epot += r6* (c12* r6 - c6);
+				
+
+//   	            ffac1 = -4.0*sys->epsilon*(-12.0*pow(sys->sigma/r1,12.0)/r1
+  // 	            		+6*pow(sys->sigma/r1,6.0)/r1);
+	                            
+   	            //sys->epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r1,12.0)
+   	            	//		-pow(sys->sigma/r1,6.0));
+                           
+ 	            sys->fx[i] += rx1*ffac1;	sys->fx[j] -= rx1*ffac1;
+   	            sys->fy[i] += ry1*ffac1;	sys->fy[j] -= ry1*ffac1;
+   	            sys->fz[i] += rz1*ffac1;	sys->fz[j] -= rz1*ffac1;	
+   	        	}
+           	}
+            
+
+
 //			if(j!=i&&j!=i+1){
 	            /* get distance between particle i and j */
 /*    	        rx1=pbc(sys->rx[i] - sys->rx[j], 0.5*sys->box);
@@ -81,26 +117,7 @@ void force(mdsys_t *sys)
             /* particles have no interactions with themselves */
          //   else if (i+1==j){
             
-	            /* get distance between particle i and j */
-				rx1=pbc(sys->rx[i] - sys->rx[j], 0.5*sys->box);
-    	        ry1=pbc(sys->ry[i] - sys->ry[j], 0.5*sys->box);
-    	        rz1=pbc(sys->rz[i] - sys->rz[j], 0.5*sys->box);
-    	        r1 = sqrt(rx1*rx1 + ry1*ry1 + rz1*rz1);
-
-    	        /* compute force and energy if within cutoff */
-				if (r1 < sys->rcut) {
-    	            ffac1 = -4.0*sys->epsilon*(-12.0*pow(sys->sigma/r1,12.0)/r1
-    	            		+6*pow(sys->sigma/r1,6.0)/r1);
-		                            
-    	            sys->epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r1,12.0)
-    	            			-pow(sys->sigma/r1,6.0));
-                           
-    	            sys->fx[i] += rx1/r1*ffac1;
-    	            sys->fy[i] += ry1/r1*ffac1;
-    	            sys->fz[i] += rz1/r1*ffac1;
-    	        	}
-            	}
-            
+            //=><//
 //	        else if (i==j){
 
 	            /* get distance between particle i+1 and j */
