@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from ctypes import *
-import sys as sysf
+import sys
 import mpi4py
 mpi4py.rc.initialize = False
 mpi4py.rc.finalize = False
@@ -8,9 +8,9 @@ from mpi4py import MPI
 
 
 # usage message
-if len(sysf.argv) != 3:
-	print( "Usage:", sysf.argv[0], "-serial or -parallel", "argon_108.inp" )
-	sysf.exit(1)
+if len(sys.argv) != 3:
+	print( "Usage:", sys.argv[0], "-serial or -parallel", "argon_108.inp" )
+	sys.exit(1)
 
 # read .inp file, take parameters, and name output files
 def read_input(input_file): 
@@ -53,9 +53,9 @@ def set_output(file_traj, file_erg, mdsys):
 
 
 # Loading dynamic link libraries
-if (sysf.argv[1]=="-parallel"):
+if (sys.argv[1]=="-parallel"):
 	libC = CDLL("./libparallelmd.so", mode=RTLD_GLOBAL)
-elif (sysf.argv[1]=="-serial"):
+elif (sys.argv[1]=="-serial"):
 	libC = CDLL("./libserialmd.so", mode=RTLD_GLOBAL)
 else:
 	print("Unknown option: -serial or -parallel")
@@ -129,59 +129,59 @@ class mdsys_t(Structure):
 
 
 # .inp file read from input
-input_file = sysf.argv[2]
+input_file = sys.argv[2]
 
 # input_param: list of parameters to start md simulation
 # inout_files: list of paths to the files for [restart (in), trajectory (out), energy(out)]
 input_param, inout_files = read_input(input_file)
 
 # populate sys with parameters
-sys = mdsys_t(input_param)
+mdsys = mdsys_t(input_param)
 
 # print( input_param, inout_files)
 # sys.nfi starts with the printing frequency, later we will overwrite it
-nprint = sys.nfi
+nprint = mdsys.nfi
 
 # initiate position and velocity
-read_data(inout_files[0],sys)
+read_data(inout_files[0],mdsys)
 
 
 # Initialize mpi
-libC.mdsys_mpi_init(byref(sys));
+libC.mdsys_mpi_init(byref(mdsys));
 # libC.mdsys_mpi_init(byref(sys),mode=RTLD_GLOBAL);
 
 
 #initialize forces and energies.
-sys.nfi=0
-libC.force(byref(sys))
-libC.ekin(byref(sys))
+mdsys.nfi=0
+libC.force(byref(mdsys))
+libC.ekin(byref(mdsys))
 
-if sys.rank==0:
-	print('Starting simulation with', sys.natoms, 'atoms for', sys.nsteps,' steps.')
+if mdsys.rank==0:
+	print('Starting simulation with', mdsys.natoms, 'atoms for', mdsys.nsteps,' steps.')
 	print("NFI \t TEMP \t EKIN \t EPOT \t ETOT")
 
 with open(inout_files[1], 'w') as file_traj, open(inout_files[2], 'w') as file_erg: 
 	# set trajectory and energies output files
-	if sys.rank==0:
-		set_output(file_traj, file_erg, sys)
+	if mdsys.rank==0:
+		set_output(file_traj, file_erg, mdsys)
 
-	for itr in range(1,sys.nsteps+1):
-		sys.nfi=itr
-		if (not (sys.nfi % nprint) and sys.rank==0):
-			set_output(file_traj, file_erg, sys)
-		libC.velverlet_1(byref(sys))
-		libC.force(byref(sys))
-		libC.velverlet_2(byref(sys))
-		libC.ekin(byref(sys))
-	if sys.rank==0:
+	for itr in range(1,mdsys.nsteps+1):
+		mdsys.nfi=itr
+		if (not (mdsys.nfi % nprint) and mdsys.rank==0):
+			set_output(file_traj, file_erg, mdsys)
+		libC.velverlet_1(byref(mdsys))
+		libC.force(byref(mdsys))
+		libC.velverlet_2(byref(mdsys))
+		libC.ekin(byref(mdsys))
+	if mdsys.rank==0:
 		file_traj.close()
 		file_erg.close()
 
-libC.mdsys_mpi_finalize(byref(sys));
+libC.mdsys_mpi_finalize(byref(mdsys));
 
 
-
-# print "Simulation Done."
+if mdsys.rank==0:
+	print("Simulation Done.")
 
 
 
