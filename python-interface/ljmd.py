@@ -11,7 +11,6 @@ if len(sysf.argv) != 2:
 
 
 # read .inp file, take parameters, and name output files
-
 def read_input(input_file): 
     input_param, inout_files = [], []
     with open(input_file) as file: 
@@ -21,6 +20,23 @@ def read_input(input_file):
             except:
                 inout_files.append(pc.split(' ')[0])
     return input_param, inout_files
+
+
+
+# read .rest file 
+def read_data(inputfile, mdsys):
+    file = open(inputfile, "r")
+    for i, line in enumerate(file):
+        sep = line.strip().split()
+        if 0 <= i < mdsys.natoms:
+            mdsys.rx[i] = float(sep[0])
+            mdsys.ry[i] = float(sep[1])
+            mdsys.rz[i] = float(sep[2])
+        else:
+            mdsys.vx[i-mdsys.natoms] = float(sep[0]) 
+            mdsys.vy[i-mdsys.natoms] = float(sep[1])  
+            mdsys.vz[i-mdsys.natoms] = float(sep[2]) 
+    return
 
 
 # Loading dynamic link libraries
