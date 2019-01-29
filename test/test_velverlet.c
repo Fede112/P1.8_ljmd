@@ -76,7 +76,7 @@ int main(int argc, char const *argv[])
 	if(	(fabs(sys.vy[2] - -0.0001000000) > 0.0001000000*eps_tole)  ){exit(1);}
 	if(	(fabs(sys.vz[2] - 0.0) > eps_tole)  ){exit(1);}
 
-	printf("velverlet_1() test completed.\n");
+	printf("velverlet_1() test: PASSED!\n");
 
 	printf("Testing velverlet_2() ...\n");
 
@@ -104,7 +104,7 @@ int main(int argc, char const *argv[])
 	if(	(fabs(sys.vz[2] - 0.0) > eps_tole)  ){exit(1);}
 
 
-	printf("velverlet_2() test completed.\n");
+	printf("velverlet_2() test: PASSED!\n");
 
 
 
