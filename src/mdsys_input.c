@@ -36,10 +36,10 @@ int get_a_line(FILE *fp, char *buf)
 }
 
 /*add comment*/
-int input_param( mdsys_t *sys, char *restfile, char *trajfile, char *ergfile, char *line, int *nprint)
+int input_param( mdsys_t *sys, char* inputfile, char *restfile, char *trajfile, char *ergfile, char *line, int *nprint)
 {
     FILE *fin;
-    fin=fopen("./test/check/argon_108.inp","r");
+    fin=fopen(inputfile,"r");
     /* read input file */
     if(get_a_line(fin,line)) return 1;
     sys->natoms=atoi(line);
@@ -70,9 +70,10 @@ int input_param( mdsys_t *sys, char *restfile, char *trajfile, char *ergfile, ch
 
 
 /*add comment*/
-int read_data (FILE *fp, char *restfile, mdsys_t *sys)
+int read_data (char *restfile, mdsys_t *sys)
 {
     /* read restart */
+    FILE *fp;
     int i;
     fp=fopen(restfile,"r");
     if(fp) {
@@ -91,6 +92,7 @@ int read_data (FILE *fp, char *restfile, mdsys_t *sys)
         perror("cannot read restart file");
         return 3;
         }
+    return 1;
 }
 	
 	

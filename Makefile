@@ -2,24 +2,37 @@
 SHELL=/bin/sh
 
 CC=mpicc
-# CC=gcc
-CFLAGS= -I./include -Wall -Wextra -O3 
+CFLAGS= -I./include -Wall -Wextra -O3
 LDFLAGS= -lm
 DEBUG= -g -ggdb
- 
-EXE=ljmd.x
-# OBJS=src/mdsys_force.o src/ljmd.o src/mdsys_input.o src/mdsys_output.o src/mdsys_bc.o src/mdsys_util.o \
-# src/mdsys_velverlet.o src/mdsys_mpi.o
-OBJS=src/mdsys_force.o src/ljmd.o src/mdsys_input.o src/mdsys_output.o src/mdsys_util.o src/mdsys_velverlet.o src/mdsys_mpi.o#src/mdsys_bc.o
+
+SO = libparallelmd.so
+EXE = ljmd_parallel.x
+OBJS = src/mdsys_force.o src/mdsys_input.o src/mdsys_output.o src/mdsys_util.o src/mdsys_velverlet.o src/mdsys_mpi.o #src/serial/mpi.o #src/mdsys_bc.o
 
 
-default: $(EXE)
+default: parallel
 
+$(EXE): src/ljmd.o 
 $(EXE): $(OBJS)
 	$(CC) $^ -o $@  $(LDFLAGS)
 
 %.o: %.c
 	$(CC) -c $< -o $@  $(CFLAGS) 
+
+parallel:$(EXE) 
+
+
+parallel-lib: CFLAGS += -fPIC -O
+parallel-lib: LDFLAGS += -shared
+parallel-lib: $(OBJS)
+	$(CC) $^ -o $(SO)  $(LDFLAGS)
+
+serial:
+	$(MAKE) -C ./src/serial
+
+serial-lib:
+	$(MAKE) libserialmd.so -C ./src/serial
 
 
 src/ljmd.o: include/mdsys_struct.h include/mdsys_input.h include/mdsys_force.h
@@ -30,9 +43,17 @@ src/mdsys_util.o: include/mdsys_util.h
 src/mdsys_velverlet.o: include/mdsys_velverlet.h include/mdsys_struct.h
 src/mdsys_mpi.o: include/mdsys_mpi.h
 
-clean:
-	rm -rf $(OBJS) *~ $(EXE) *.png ./test/*.x
+#serial
+src/test/mpi.o: include/mpi.h
 
+clean:
+	rm -rf $(OBJS) *~ $(EXE) ./test/*.x *.x 
+	$(MAKE) clean -C ./src/serial
+
+
+
+
+# ALL PURPOSE TESTS
 
 check: ./ljmd.x
 	./ljmd.x < ./test/check/argon_108.inp
@@ -66,7 +87,14 @@ time: ./ljmd.x
 
 .PHONY: default debug test benchmark clean
 
-# default: serial
+# serial: CFLAGS += -I ./src/serial/ 
+# serial: $(EXE)
+# serial:
+# 	$(MAKE) -C ./src/serial
+
+
+
+
 
 # serial:
 # 	$(MAKE) $(MFLAGS) -C Obj-$@

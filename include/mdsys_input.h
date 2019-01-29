@@ -13,11 +13,11 @@
 int get_a_line(FILE *fp, char *buf);
 
 /*add commet*/
-int input_param( mdsys_t *sys, char *restfile, char *trajfile, char *ergfile, char *line, int *nprint);
+int input_param( mdsys_t *sys, char *inputfile,char *restfile, char *trajfile, char *ergfile, char *line, int *nprint);
 
 
 /*add comment*/
-int read_data (FILE *fp, char *restfile, mdsys_t *sys);
+int read_data (char *restfile, mdsys_t *sys);
 
 
 #endif // MDIN_H
