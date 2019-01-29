@@ -45,10 +45,10 @@ void force(mdsys_t *sys)
     azzero(sys->fz,sys->natoms);
 
 	
-	for(i=0; i < (sys->natoms)-1; i++) {
-	   for(j=i+1; j < (sys->natoms); j++) {
+	for(i=0; i < (sys->natoms); i++) {
+	   for(j=0; j < (sys->natoms); j++) {
 
-//		if (i==j) continue;
+		if (i==j) continue;
             /* get distance between particle i and j */
 			rx1=pbc(sys->rx[i] - sys->rx[j], 0.5*sys->box);
   	        ry1=pbc(sys->ry[i] - sys->ry[j], 0.5*sys->box);
@@ -62,7 +62,7 @@ void force(mdsys_t *sys)
 				double r6 = rsqinv *rsqinv *rsqinv;
 				
 				ffac1 = (12.0*c12*r6- 6.0*c6)*r6*rsqinv;
-				sys->epot += r6* (c12* r6 - c6);
+				sys->epot += 0.5*r6* (c12* r6 - c6);
 				
 
 //   	            ffac1 = -4.0*sys->epsilon*(-12.0*pow(sys->sigma/r1,12.0)/r1
@@ -71,9 +71,9 @@ void force(mdsys_t *sys)
    	            //sys->epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r1,12.0)
    	            	//		-pow(sys->sigma/r1,6.0));
                            
- 	            sys->fx[i] += rx1*ffac1;	sys->fx[j] -= rx1*ffac1;
-   	            sys->fy[i] += ry1*ffac1;	sys->fy[j] -= ry1*ffac1;
-   	            sys->fz[i] += rz1*ffac1;	sys->fz[j] -= rz1*ffac1;	
+ 	            sys->fx[i] += rx1*ffac1;	//sys->fx[j] -= rx1*ffac1;
+   	            sys->fy[i] += ry1*ffac1;	//sys->fy[j] -= ry1*ffac1;
+   	            sys->fz[i] += rz1*ffac1;	//sys->fz[j] -= rz1*ffac1;	
    	        	}
            	}
             
