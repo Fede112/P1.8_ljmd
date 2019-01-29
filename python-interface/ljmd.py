@@ -103,6 +103,9 @@ class mdsys_t(Structure):
 input_file = sysf.argv[1]
 input_param, inout_files = read_input(input_file)
 
+# populate sys with parameters
+sys = mdsys_t(input_param)
+
 '''
 # to check the structure
 sys = mdsys_t()
