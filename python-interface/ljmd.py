@@ -122,6 +122,9 @@ sys = mdsys_t(input_param)
 # initiate position and velocity
 read_data(inout_files[0],sys)
 
+# get trajectory and energies output files
+get_output(inout_files[1], inout_files[2], sys)
+
 
 #calling forces and energies, as a test. It works!
 #sys.nfi=0
