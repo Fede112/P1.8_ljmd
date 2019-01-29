@@ -39,6 +39,7 @@ def read_data(inputfile, mdsys):
     return
 
 
+
 # Loading dynamic link libraries
 libC = CDLL("./ljmd.so")
 
@@ -78,7 +79,8 @@ class mdsys_t(Structure):
     ]  
 
     def __init__(self, input_param):
-        
+        # for field_name, field_type in sys._fields_:
+        # print setattr(sys, field_name, input_list[0])
         self.natoms = int(input_param[0])
         self.nfi = int(input_param[8])
         self.nsteps = int(input_param[6])
@@ -102,12 +104,18 @@ class mdsys_t(Structure):
 
 input_file = sysf.argv[1]
 input_param, inout_files = read_input(input_file)
-
+print(input_param, inout_files)
 # populate sys with parameters
 sys = mdsys_t(input_param)
 
 # initiate position and velocity
 read_data(inout_files[0],sys)
+
+
+#calling forces and energies, as a test.
+sys.nfi=0
+libC.force(byref(sys))
+libC.ekin(byref(sys))
 
 '''
 # to check the structure
