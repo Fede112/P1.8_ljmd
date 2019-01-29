@@ -28,7 +28,7 @@ const double mvsq2e=2390.05736153349; /* m*v^2 in kcal/mol */
 /* compute forces */
 void force(mdsys_t *sys) 
 {
-
+//<<<<<<< HEAD
 
     // MPI_Initialized(&(sys->initialized));
     // if (!sys->initialized)
@@ -62,7 +62,6 @@ void force(mdsys_t *sys)
 	c6 = 4.0* sys->epsilon* pow(sys->sigma,6.0);
 	rcsq = sys->rcut * sys->rcut;
 
-	
     /* zero energy and forces */
     b_epot=0.0;
     sys->epot=0.0;
@@ -88,24 +87,23 @@ void force(mdsys_t *sys)
             rsq = rx*rx + ry*ry + rz*rz;
       
             /* compute force and energy if within cutoff */
-            if (r < rcsp) {
-
-				double rsqinv = 1.0/rsq;
+            if (rsq < rcsq) {
+            
+            	double rsqinv = 1.0/rsq;
 				double r6 = rsqinv *rsqinv *rsqinv;
-				
-				ffac = (12.0*c12*r6- 6.0*c6)*r6*rsqinv;
-				b_epot += 0.5*r6* (c12* r6 - c6);
-				
-                sys->b_fx[i] += rx/ffac;
-                sys->b_fy[i] += ry/ffac;
-                sys->b_fz[i] += rz/ffac;
+                ffac = (12.0*c12*r6- 6.0*c6)*r6*rsqinv;
+                b_epot += r6* (c12* r6 - c6);
+//                b_epot += 0.5*r6* (c12* r6 - c6);
 
-                sys->b_fx[j] -= rx/ffac;
-                sys->b_fy[j] -= ry/ffac;
-                sys->b_fz[j] -= rz/ffac;
+                sys->b_fx[i] += rx*ffac;
+                sys->b_fy[i] += ry*ffac;
+                sys->b_fz[i] += rz*ffac;
+
+                sys->b_fx[j] -= rx*ffac;
+                sys->b_fy[j] -= ry*ffac;
+                sys->b_fz[j] -= rz*ffac;
             }
         }
-
 
     }
     MPI_Reduce(sys->b_fx, sys->fx, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
