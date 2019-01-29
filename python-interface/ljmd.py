@@ -124,4 +124,34 @@ nprint = sys.nfi
 # initiate position and velocity
 read_data(inout_files[0],sys)
 
+#initialize forces and energies.
+sys.nfi=0
+libC.force(byref(sys))
+libC.ekin(byref(sys))
+
+
+print 'Starting simulation with', sys.natoms, 'atoms for', sys.nsteps,' steps.';
+print "NFI \t TEMP \t EKIN \t EPOT \t ETOT";
+
+with open(inout_files[1], 'w') as file_traj, open(inout_files[2], 'w') as file_erg: 
+	# set trajectory and energies output files
+	set_output(file_traj, file_erg, sys)
+
+	for itr in xrange(1,sys.nsteps+1):
+		sys.nfi=itr
+		if (not (sys.nfi % nprint)):
+			set_output(file_traj, file_erg, sys)
+		libC.velverlet_1(byref(sys))
+		libC.force(byref(sys))
+		libC.velverlet_2(byref(sys))
+		libC.ekin(byref(sys))
+
+	file_traj.close()
+	file_erg.close()
+
+
+print "Simulation Done."
+
+
+
 
