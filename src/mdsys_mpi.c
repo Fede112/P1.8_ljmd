@@ -4,14 +4,10 @@
 void mdsys_mpi_init(mdsys_t *sys)
 {
     MPI_Initialized(&(sys->initialized));
-    sys->rank = 113;
 
-    printf("sys-initialized: %d\n", sys->initialized);
-    if (sys->initialized)
+    if (!sys->initialized)
     {
-        printf("HERE!\n");
-        printf("sys-rank: %d\n", sys->rank);
-        MPI_Init();
+        MPI_Init(NULL, NULL);
         MPI_Comm_size(MPI_COMM_WORLD, &(sys->nproc));
         MPI_Comm_rank(MPI_COMM_WORLD, &(sys->rank));
     }

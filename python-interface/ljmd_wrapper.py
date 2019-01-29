@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 from ctypes import *
 import sys as sysf
+import mpi4py
+mpi4py.rc.initialize = False
+mpi4py.rc.finalize = False
+from mpi4py import MPI
 
 
 # usage message
-if len(sysf.argv) != 2:
-    print "Usage:", sysf.argv[0], "argon_108.inp" 
-    sysf.exit(1)
-
+if len(sysf.argv) != 3:
+	print( "Usage:", sysf.argv[0], "-serial or -parallel", "argon_108.inp" )
+	sysf.exit(1)
 
 # read .inp file, take parameters, and name output files
 def read_input(input_file): 
@@ -37,13 +40,12 @@ def read_data(inputfile, mdsys):
 	libC.azzero(mdsys.fx, mdsys.natoms)
 	libC.azzero(mdsys.fy, mdsys.natoms)
 	libC.azzero(mdsys.fz, mdsys.natoms)
-
 	return
 
 
 # output function
 def set_output(file_traj, file_erg, mdsys):
-	print mdsys.nfi, '\t', mdsys.temp,'\t', mdsys.ekin,'\t', mdsys.epot,'\t', mdsys.ekin + mdsys.epot
+	print (mdsys.nfi, '\t', mdsys.temp,'\t', mdsys.ekin,'\t', mdsys.epot,'\t', mdsys.ekin + mdsys.epot)
 	file_erg.write('{} {} {} {} {} \n'.format(mdsys.nfi, mdsys.temp, mdsys.ekin, mdsys.epot, mdsys.ekin + mdsys.epot))        
 	for i in range(sys.natoms):
 		file_traj.write('Ar {} {} {} \n'.format(mdsys.rx[i], mdsys.ry[i], mdsys.rz[i] ))    
@@ -51,14 +53,14 @@ def set_output(file_traj, file_erg, mdsys):
 
 
 # Loading dynamic link libraries
-libC = CDLL("./ljmd.so")
+if (sysf.argv[1]=="-parallel"):
+	libC = CDLL("./libparallelmd.so", mode=RTLD_GLOBAL)
+elif (sysf.argv[1]=="-serial"):
+	libC = CDLL("./libserialmd.so", mode=RTLD_GLOBAL)
+else:
+	print("Unknown option: -serial or -parallel")
+	exit()
 
-#kboltz, mvsq2e = (c_double * 2)(*[0.0019872067, 2390.05736153349]) # it is here, but not be used :)
-
-# to check: do print out variables, and then sum 
-#print kboltz, mvsq2e
-#result = kboltz + mvsq2e
-#print result
 
 
 # ctypes structures and setting constructor:
@@ -85,9 +87,16 @@ class mdsys_t(Structure):
 	('fx', POINTER(c_double)), 
 	('fy', POINTER(c_double)), 
 	('fz', POINTER(c_double)),
+	('b_fx', POINTER(c_double)), 
+	('b_fy', POINTER(c_double)), 
+	('b_fz', POINTER(c_double)),
+	('initialized', c_int),
+	('finalized', c_int), 
+	('rank', c_int),
+	('nproc', c_int)
 	]  
 	def __init__(self, input_param):
-	 	self.natoms = int(input_param[0])
+		self.natoms = int(input_param[0])
 		self.nfi = int(input_param[8])
 		self.nsteps = int(input_param[6])
 		self.dt = input_param[7]
@@ -105,11 +114,22 @@ class mdsys_t(Structure):
 		self.fx = (c_double * self.natoms)()
 		self.fy = (c_double * self.natoms)()
 		self.fz = (c_double * self.natoms)()
+		self.b_fx = (c_double * self.natoms)()
+		self.b_fy = (c_double * self.natoms)()
+		self.b_fz = (c_double * self.natoms)()
+		self.nproc = 0
+		self.nrank = 0
+		self.initialized = 0
+		self.finalized = 0
 
+
+
+
+# MAIN PART OF PROGRAM
 
 
 # .inp file read from input
-input_file = sysf.argv[1]
+input_file = sysf.argv[2]
 
 # input_param: list of parameters to start md simulation
 # inout_files: list of paths to the files for [restart (in), trajectory (out), energy(out)]
@@ -118,39 +138,50 @@ input_param, inout_files = read_input(input_file)
 # populate sys with parameters
 sys = mdsys_t(input_param)
 
+# print( input_param, inout_files)
 # sys.nfi starts with the printing frequency, later we will overwrite it
 nprint = sys.nfi
 
 # initiate position and velocity
 read_data(inout_files[0],sys)
 
+
+# Initialize mpi
+libC.mdsys_mpi_init(byref(sys));
+# libC.mdsys_mpi_init(byref(sys),mode=RTLD_GLOBAL);
+
+
 #initialize forces and energies.
 sys.nfi=0
 libC.force(byref(sys))
 libC.ekin(byref(sys))
 
-
-print 'Starting simulation with', sys.natoms, 'atoms for', sys.nsteps,' steps.';
-print "NFI \t TEMP \t EKIN \t EPOT \t ETOT";
+if sys.rank==0:
+	print('Starting simulation with', sys.natoms, 'atoms for', sys.nsteps,' steps.')
+	print("NFI \t TEMP \t EKIN \t EPOT \t ETOT")
 
 with open(inout_files[1], 'w') as file_traj, open(inout_files[2], 'w') as file_erg: 
 	# set trajectory and energies output files
-	set_output(file_traj, file_erg, sys)
+	if sys.rank==0:
+		set_output(file_traj, file_erg, sys)
 
-	for itr in xrange(1,sys.nsteps+1):
+	for itr in range(1,sys.nsteps+1):
 		sys.nfi=itr
-		if (not (sys.nfi % nprint)):
+		if (not (sys.nfi % nprint) and sys.rank==0):
 			set_output(file_traj, file_erg, sys)
 		libC.velverlet_1(byref(sys))
 		libC.force(byref(sys))
 		libC.velverlet_2(byref(sys))
 		libC.ekin(byref(sys))
+	if sys.rank==0:
+		file_traj.close()
+		file_erg.close()
 
-	file_traj.close()
-	file_erg.close()
+libC.mdsys_mpi_finalize(byref(sys));
 
 
-print "Simulation Done."
+
+# print "Simulation Done."
 
 
 
