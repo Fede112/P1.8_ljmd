@@ -2,7 +2,7 @@
 SHELL=/bin/sh
 
 CC=gcc
-CFLAGS= -I./include -Wall -Wextra -O3 
+CFLAGS= -I./include -Wall -Wextra -O3 -ffast-math -fexpensive-optimizations -msse3
 LDFLAGS= -lm
 DEBUG= -g -ggdb
  
