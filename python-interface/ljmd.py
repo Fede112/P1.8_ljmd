@@ -40,6 +40,17 @@ def read_data(inputfile, mdsys):
 
 
 
+# output function
+def get_output(outputfile_traj, outputfile_erg, mdsys):
+    print(mdsys.nfi, mdsys.temp, mdsys.ekin, mdsys.epot, mdsys.ekin + mdsys.epot)
+    with open(outputfile_traj, 'w') as traj, open(outputfile_erg, 'w') as erg: 
+	erg.write('{} {} {} {} {} \n'.format(mdsys.nfi, mdsys.temp, mdsys.ekin, mdsys.epot, mdsys.ekin + mdsys.epot))        
+	for i in range(sys.natoms):
+            traj.write('Ar {} {} {} \n'.format(mdsys.rx[i], mdsys.ry[i], mdsys.rz[i] ))    
+        traj.close()
+        erg.close()
+    return
+
 # Loading dynamic link libraries
 libC = CDLL("./ljmd.so")
 
@@ -112,10 +123,10 @@ sys = mdsys_t(input_param)
 read_data(inout_files[0],sys)
 
 
-#calling forces and energies, as a test.
-sys.nfi=0
-libC.force(byref(sys))
-libC.ekin(byref(sys))
+#calling forces and energies, as a test. It works!
+#sys.nfi=0
+#libC.force(byref(sys))
+#libC.ekin(byref(sys))
 
 '''
 # to check the structure
