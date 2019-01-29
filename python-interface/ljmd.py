@@ -50,7 +50,7 @@ print kboltz, mvsq2e
 result = kboltz + mvsq2e
 print result
 
-# ctypes structures:
+# ctypes structures and setting constructor:
 
 class mdsys_t(Structure):
   _fields_ = [
@@ -75,7 +75,29 @@ class mdsys_t(Structure):
     ('fx', POINTER(c_double)), 
     ('fy', POINTER(c_double)), 
     ('fz', POINTER(c_double)),      
-  ]  
+    ]  
+
+    def __init__(self, input_param):
+        
+        self.natoms = int(input_param[0])
+        self.nfi = int(input_param[8])
+        self.nsteps = int(input_param[6])
+        self.dt = input_param[7]
+        self.mass = input_param[1]
+        self.epsilon = input_param[2]
+        self.sigma = input_param[3]
+        self.box = input_param[5]
+        self.rcut = input_param[4]
+        self.rx = (c_double * self.natoms)()
+        self.ry = (c_double * self.natoms)()
+        self.rz = (c_double * self.natoms)()
+        self.vx = (c_double * self.natoms)()
+        self.vy = (c_double * self.natoms)()
+        self.vz = (c_double * self.natoms)()
+        self.fx = (c_double * self.natoms)()
+        self.fy = (c_double * self.natoms)()
+        self.fz = (c_double * self.natoms)()
+		
 
 
 input_file = sysf.argv[1]
