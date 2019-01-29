@@ -7,7 +7,7 @@ CFLAGS= -I./include -Wall -Wextra -O3 -ffast-math -fexpensive-optimizations -mss
 LDFLAGS= -lm
 DEBUG= -g -ggdb
 
-SO = ./python-interface/libparallelmd.so
+SO = ./libparallelmd.so
 EXE = ljmd_parallel.x
 OBJS = src/mdsys_force.o src/mdsys_input.o src/mdsys_output.o src/mdsys_util.o src/mdsys_velverlet.o src/mdsys_mpi.o
 
