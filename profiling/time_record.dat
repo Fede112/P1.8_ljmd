@@ -2,11 +2,11 @@
 real 25.62
 user 25.59
 sys 0.00
-#inline
+#add inline pbc
 real 25.49
 user 25.46
 sys 0.00
-#-O3
+#add -O3
 real 22.80
 user 22.78
 sys 0.00
@@ -18,15 +18,15 @@ sys 0.00
 real 22.10
 user 22.09
 sys 0.00
-#unroll 1
+#unrolling 1 (ok!)
 real 22.46
 user 22.44
 sys 0.00
-#unroll 2
+#unrolling 2 (ok!)
 real 22.34
 user 22.32
 sys 0.01
-#unroll 3
+#unrolling 3 (ok!)
 real 22.18
 user 22.16
 sys 0.00
@@ -38,34 +38,17 @@ sys 0.00
 real 2.94
 user 2.94
 sys 0.00
-#rolled
+#rolled (unrolling did seem very effective at this point)
 real 3.64
 user 3.63
 sys 0.00
-#part 2
-real 1.46
-user 1.44
-sys 0.00
-#no 3rd law
+
+#no 3rd law (less math.h functions)
 real 3.04
 user 3.04
 sys 0.00
-#part2
+#part2 (3rd law + less math.h functions)
 real 1.55
 user 1.54
 sys 0.00
-#
-Command exited with non-zero status 132
-real 0.06
-user 0.03
-sys 0.01
-Command exited with non-zero status 132
-real 0.06
-user 0.03
-sys 0.01
-real 6.42
-user 12.69
-sys 0.04
-real 6.47
-user 12.76
-sys 0.06
+
