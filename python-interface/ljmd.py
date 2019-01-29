@@ -106,6 +106,9 @@ input_param, inout_files = read_input(input_file)
 # populate sys with parameters
 sys = mdsys_t(input_param)
 
+# initiate position and velocity
+read_data(inout_files[0],sys)
+
 '''
 # to check the structure
 sys = mdsys_t()
