@@ -6,9 +6,9 @@ CFLAGS= -I./include -Wall -Wextra -O3
 LDFLAGS= -lm
 DEBUG= -g -ggdb
 
-SO = libparallelmd.so
+SO = ./python-interface/libparallelmd.so
 EXE = ljmd_parallel.x
-OBJS = src/mdsys_force.o src/mdsys_input.o src/mdsys_output.o src/mdsys_util.o src/mdsys_velverlet.o src/mdsys_mpi.o #src/serial/mpi.o #src/mdsys_bc.o
+OBJS = src/mdsys_force.o src/mdsys_input.o src/mdsys_output.o src/mdsys_util.o src/mdsys_velverlet.o src/mdsys_mpi.o
 
 
 default: parallel
@@ -23,8 +23,8 @@ $(EXE): $(OBJS)
 parallel:$(EXE) 
 
 
-parallel-lib: CFLAGS += -fPIC -O
-parallel-lib: LDFLAGS += -shared
+parallel-lib: CFLAGS += -fPIC
+parallel-lib: LDFLAGS += -shared -Wl,-rpath,/usr/lib/x86_64-linux-gnu/openmpi/lib -rdynamic
 parallel-lib: $(OBJS)
 	$(CC) $^ -o $(SO)  $(LDFLAGS)
 
@@ -47,7 +47,7 @@ src/mdsys_mpi.o: include/mdsys_mpi.h
 src/test/mpi.o: include/mpi.h
 
 clean:
-	rm -rf $(OBJS) *~ $(EXE) ./test/*.x *.x 
+	rm -rf $(OBJS) *~ $(EXE) ./test/*.x *.x *.so ./python-interface/*.so
 	$(MAKE) clean -C ./src/serial
 
 
