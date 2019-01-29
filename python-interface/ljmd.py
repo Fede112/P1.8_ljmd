@@ -2,6 +2,20 @@
 
 from ctypes import *
 
+# read .inp file, take parameters, and name output files
+
+def read_input(input_file): 
+    input_param, inout_files = [], []
+    with open(input_file) as file: 
+        for pc in file:
+            try:              
+                input_param.append(float(pc.split(' ')[0]))
+            except:
+                inout_files.append(pc.split(' ')[0])
+    return input_param, inout_files
+
+
+
 # Loading dynamic link libraries
 libC = CDLL("./ljmd.so")
 
@@ -9,7 +23,6 @@ libC = CDLL("./ljmd.so")
 kboltz, mvsq2e = (c_double * 2)(*[0.0019872067, 2390.05736153349])
 
 # to check: do print out variables, and then sum 
-
 print kboltz, mvsq2e
 result = kboltz + mvsq2e
 print result
@@ -41,7 +54,7 @@ class mdsys_t(Structure):
     ('fz', POINTER(c_double)),      
   ]  
 
-
+'''
 # to check the structure
 sys = mdsys_t()
 sys.natoms=100
@@ -58,5 +71,5 @@ ilist = (c_int * sys.natoms)()
 
 test = libC.print_test(ilist, sys.natoms)
 print "print from python: ", sys.natoms
-
+'''
 
