@@ -2,7 +2,8 @@
 SHELL=/bin/sh
 
 CC=mpicc
-CFLAGS= -I./include -Wall -Wextra -O3
+CFLAGS= -I./include -Wall -Wextra -O3 -ffast-math -fexpensive-optimizations -msse3
+
 LDFLAGS= -lm
 DEBUG= -g -ggdb
 
@@ -84,6 +85,9 @@ test_input:
 
 time: ./ljmd.x
 	/usr/bin/time -p -o profiling/time_record.dat -a ./ljmd.x < ./test/check/argon_108.inp
+
+bigger: ./ljmd.x
+	/usr/bin/time -p -o profiling/time_record1.dat -a ./ljmd.x < ./examples/argon_2916.inp
 
 .PHONY: default debug test benchmark clean
 

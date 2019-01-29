@@ -29,6 +29,7 @@ const double mvsq2e=2390.05736153349; /* m*v^2 in kcal/mol */
 void force(mdsys_t *sys) 
 {
 
+
     // MPI_Initialized(&(sys->initialized));
     // if (!sys->initialized)
     // {
@@ -53,11 +54,19 @@ void force(mdsys_t *sys)
 
     double r,ffac;
     double rx,ry,rz;
+
     int i,j;
 
+	double c6, c12, rsq, rcsq;
+	c12= 4.0* sys->epsilon* pow(sys->sigma,12.0);
+	c6 = 4.0* sys->epsilon* pow(sys->sigma,6.0);
+	rcsq = sys->rcut * sys->rcut;
+
+	
     /* zero energy and forces */
     b_epot=0.0;
     sys->epot=0.0;
+
     // azzero(sys->fx,sys->natoms);
     // azzero(sys->fy,sys->natoms);
     // azzero(sys->fz,sys->natoms);
@@ -76,25 +85,28 @@ void force(mdsys_t *sys)
             rx=pbc(sys->rx[i] - sys->rx[j], 0.5*sys->box);
             ry=pbc(sys->ry[i] - sys->ry[j], 0.5*sys->box);
             rz=pbc(sys->rz[i] - sys->rz[j], 0.5*sys->box);
-            r = sqrt(rx*rx + ry*ry + rz*rz);
+            rsq = rx*rx + ry*ry + rz*rz;
       
             /* compute force and energy if within cutoff */
-            if (r < sys->rcut) {
-                ffac = -4.0*sys->epsilon*(-12.0*pow(sys->sigma/r,12.0)/r
-                                         +6*pow(sys->sigma/r,6.0)/r);
-                
-                b_epot += 4.0*sys->epsilon*(pow(sys->sigma/r,12.0)
-                                               -pow(sys->sigma/r,6.0));
+            if (r < rcsp) {
 
-                sys->b_fx[i] += rx/r*ffac;
-                sys->b_fy[i] += ry/r*ffac;
-                sys->b_fz[i] += rz/r*ffac;
+				double rsqinv = 1.0/rsq;
+				double r6 = rsqinv *rsqinv *rsqinv;
+				
+				ffac = (12.0*c12*r6- 6.0*c6)*r6*rsqinv;
+				b_epot += 0.5*r6* (c12* r6 - c6);
+				
+                sys->b_fx[i] += rx/ffac;
+                sys->b_fy[i] += ry/ffac;
+                sys->b_fz[i] += rz/ffac;
 
-                sys->b_fx[j] -= rx/r*ffac;
-                sys->b_fy[j] -= ry/r*ffac;
-                sys->b_fz[j] -= rz/r*ffac;
+                sys->b_fx[j] -= rx/ffac;
+                sys->b_fy[j] -= ry/ffac;
+                sys->b_fz[j] -= rz/ffac;
             }
         }
+
+
     }
     MPI_Reduce(sys->b_fx, sys->fx, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     MPI_Reduce(sys->b_fy, sys->fy, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
@@ -109,8 +121,9 @@ void ekin(mdsys_t *sys)
     int i;
 
     sys->ekin=0.0;
-    for (i=0; i<sys->natoms; ++i) {
+    for (i=0; i<sys->natoms; i++) {
         sys->ekin += 0.5*mvsq2e*sys->mass*(sys->vx[i]*sys->vx[i] + sys->vy[i]*sys->vy[i] + sys->vz[i]*sys->vz[i]);
+//        sys->ekin += 0.5*mvsq2e*sys->mass*(sys->vx[i+1]*sys->vx[i+1] + sys->vy[i+1]*sys->vy[i+1] + sys->vz[i+1]*sys->vz[i+1]);
     }
     sys->temp = 2.0*sys->ekin/(3.0*sys->natoms-3.0)/kboltz;
 }
