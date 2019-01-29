@@ -14,33 +14,10 @@ const double mvsq2e=2390.05736153349; /* m*v^2 in kcal/mol */
 
 
 
-// struct _mdsys {
-//     int natoms,nfi,nsteps;
-//     double dt, mass, epsilon, sigma, box, rcut;
-//     double ekin, epot, temp;
-//     double *rx, *ry, *rz;
-//     double *vx, *vy, *vz;
-//     double *fx, *fy, *fz;
-// };
-// typedef struct _mdsys mdsys_t;
-
-
 /* compute forces */
 void force(mdsys_t *sys) 
 {
-//<<<<<<< HEAD
-
-    // MPI_Initialized(&(sys->initialized));
-    // if (!sys->initialized)
-    // {
-    //     MPI_Init(NULL, NULL);
-    //     MPI_Comm_size(MPI_COMM_WORLD, &(sys->nproc));
-    //     MPI_Comm_rank( MPI_COMM_WORLD, &(sys->rank));
-    // }
-
-    // mdsys_mpi_init(sys);
-
-
+    
     // buffers for mpi
     double b_epot; 
     // b_fx, b_fy, b_fz are malloc outside because it is to expensive to malloc every time force is called
@@ -52,7 +29,7 @@ void force(mdsys_t *sys)
     MPI_Bcast(sys->rz, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
 
-    double r,ffac;
+    double ffac;
     double rx,ry,rz;
 
     int i,j;

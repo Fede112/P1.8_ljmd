@@ -3,6 +3,7 @@
 #include "math.h"
 #include "mdsys_force.h"
 #include "mdsys_struct.h"
+#include "mpi.h"
 
 // static const double kboltz=0.0019872067;     /* boltzman constant in kcal/mol/K */
 // static const double mvsq2e=2390.05736153349; /* m*v^2 in kcal/mol */
@@ -21,6 +22,8 @@ int main(int argc, char const *argv[])
 	sys.epsilon = 0.2379;
 	sys.rcut = 4;
 	sys.box = 16;
+	mdsys_mpi_init(&sys);
+
 
 
 	sys.rx = (double *)malloc(sys.natoms*sizeof(double));
@@ -29,6 +32,9 @@ int main(int argc, char const *argv[])
 	sys.fx = (double *)malloc(sys.natoms*sizeof(double));
 	sys.fy = (double *)malloc(sys.natoms*sizeof(double));
 	sys.fz = (double *)malloc(sys.natoms*sizeof(double));
+	sys.b_fx = (double *)malloc(sys.natoms*sizeof(double));
+	sys.b_fy = (double *)malloc(sys.natoms*sizeof(double));
+	sys.b_fz = (double *)malloc(sys.natoms*sizeof(double));
 
 
 
@@ -93,6 +99,9 @@ int main(int argc, char const *argv[])
 	if(	(fabs(sys.fz[1] - 0) > 61.6889064*eps_tole)  ){exit(1);}
 
 	printf("force() test: PASSED!\n");
+
+    mdsys_mpi_finalize(&sys);
+
 
 	return 0;
 }

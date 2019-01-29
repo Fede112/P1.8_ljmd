@@ -47,7 +47,7 @@ def read_data(inputfile, mdsys):
 def set_output(file_traj, file_erg, mdsys):
 	print (mdsys.nfi, '\t', mdsys.temp,'\t', mdsys.ekin,'\t', mdsys.epot,'\t', mdsys.ekin + mdsys.epot)
 	file_erg.write('{} {} {} {} {} \n'.format(mdsys.nfi, mdsys.temp, mdsys.ekin, mdsys.epot, mdsys.ekin + mdsys.epot))        
-	for i in range(sys.natoms):
+	for i in range(mdsys.natoms):
 		file_traj.write('Ar {} {} {} \n'.format(mdsys.rx[i], mdsys.ry[i], mdsys.rz[i] ))    
 	return
 

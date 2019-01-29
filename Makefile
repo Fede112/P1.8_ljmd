@@ -48,7 +48,7 @@ src/mdsys_mpi.o: include/mdsys_mpi.h
 src/test/mpi.o: include/mpi.h
 
 clean:
-	rm -rf $(OBJS) *~ $(EXE) ./test/*.x *.x *.so ./python-interface/*.so
+	rm -rf $(OBJS) *~ $(EXE) ./test/*.x *.x *.so 
 	$(MAKE) clean -C ./src/serial
 
 
@@ -56,8 +56,8 @@ clean:
 
 # ALL PURPOSE TESTS
 
-check: ./ljmd.x
-	./ljmd.x < ./test/check/argon_108.inp
+check: serial
+	./ljmd_serial.x ./test/check/argon_108.inp
 	head -10 ./test/check/argon_108.dat | awk '{printf("%d %.6f %.6f %.6f\n",$$1,$$2,$$3,$$4);}'> ./test/check/a.dat
 	head -10 ./test/reference/argon_108.dat | awk '{printf("%d %.6f %.6f %.6f\n",$$1,$$2,$$3,$$4);}'> ./test/check/b.dat
 	cmp ./test/check/a.dat ./test/check/b.dat || exit 1
@@ -66,13 +66,13 @@ check: ./ljmd.x
 
 # Make test
 test: test_force test_velverlet test_ekin test_input
-	#./test/test_force.x 
+	./test/test_force.x 
 	./test/test_velverlet.x
 	./test/test_ekin.x
 	./test/test_input.x ./test/check/argon_108.inp
 
 test_force: 
-#	$(CC) ./test/test_force.c ./src/mdsys_force.c ./src/mdsys_util.c -o ./test/test_force.x -I ./include -lm
+	$(CC) ./test/test_force.c ./src/mdsys_force.c ./src/mdsys_util.c ./src/serial/mpi.c ./src/mdsys_mpi.c -o ./test/test_force.x -I ./include -I ./src/serial/ -lm
 
 test_velverlet:
 	$(CC) ./test/test_velverlet.c ./src/mdsys_velverlet.c -o ./test/test_velverlet.x -I ./include -lm
