@@ -90,8 +90,7 @@ class mdsys_t(Structure):
     ]  
 
     def __init__(self, input_param):
-        # for field_name, field_type in sys._fields_:
-        # print setattr(sys, field_name, input_list[0])
+                
         self.natoms = int(input_param[0])
         self.nfi = int(input_param[8])
         self.nsteps = int(input_param[6])
