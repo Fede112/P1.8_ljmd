@@ -1,6 +1,14 @@
 #!/usr/bin/env python
 
 from ctypes import *
+import sys as sysf
+
+
+# usage message
+if len(sysf.argv) != 2:
+    print "Usage:", sysf.argv[0], "argon_108.inp" 
+    sysf.exit(1)
+
 
 # read .inp file, take parameters, and name output files
 
@@ -13,7 +21,6 @@ def read_input(input_file):
             except:
                 inout_files.append(pc.split(' ')[0])
     return input_param, inout_files
-
 
 
 # Loading dynamic link libraries
@@ -53,6 +60,10 @@ class mdsys_t(Structure):
     ('fy', POINTER(c_double)), 
     ('fz', POINTER(c_double)),      
   ]  
+
+
+input_file = sysf.argv[1]
+input_param, inout_files = read_input(input_file)
 
 '''
 # to check the structure
